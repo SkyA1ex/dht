@@ -1,10 +1,10 @@
 package com.jackqack.test.dht;
 
-
-import com.jackqack.dht.Constants;
 import com.jackqack.dht.Key;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by jackqack on 3/3/15.

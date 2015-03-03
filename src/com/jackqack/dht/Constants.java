@@ -6,5 +6,6 @@ package com.jackqack.dht;
 public final class Constants {
 
     public static final int BIT_LENGTH = 160;
+    public static final int K = 20;
 
 }

@@ -1,18 +1,20 @@
 package com.jackqack.dht;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.BitSet;
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Created by jackqack on 3/3/15.
  */
 public final class Key implements Comparable<Key> {
+    private final static Logger LOG = Logger.getLogger(Key.class.toString());
 
     private BitSet id;
+
 
     public Key() {
         this.id = new BitSet(Constants.BIT_LENGTH);
