@@ -22,7 +22,7 @@ public class KeyTest {
         assertEquals(k1.toString(), k2.toString());
         assertEquals(k2.dist(k3).getId(),k2.getId());
 
-        System.out.println("KeyTest.keyStringTest ended successfully!");
+        System.out.println("KeyTest.keyStringTest was successfull!");
     }
 
     @Test
@@ -35,7 +35,23 @@ public class KeyTest {
         assertTrue(k3.compareTo(k1) == 1);
         assertTrue(k3.compareTo(k3) == 0);
 
-        System.out.println("KeyTest.keyIntTest ended successfully!");
+        System.out.println("KeyTest.keyIntTest was successfull!");
+    }
+
+    @Test
+    public void keyRankTest() {
+        Key k1 = new Key(Integer.parseInt("0000", 2));
+        Key k2 = new Key(Integer.parseInt("0001", 2));
+        Key k3 = new Key(Integer.parseInt("0011", 2));
+        Key k4 = new Key(Integer.parseInt("0100", 2));
+        Key k5 = new Key(Integer.parseInt("1001", 2));
+        Key k6 = new Key(Integer.parseInt("1010", 2));
+        Key k7 = new Key(Integer.parseInt("1111", 2));
+
+        assertEquals(k1.dist(k7).rank(), 4);
+
+
+        System.out.println("KeyTest.keyIntTest was successfull!");
     }
 
 

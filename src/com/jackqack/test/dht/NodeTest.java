@@ -20,6 +20,6 @@ public class NodeTest {
         assertNotEquals(n1, n2);
         assertTrue(n1.compareTo(n2) == 1);
 
-        System.out.println("NodeTest.nodeTest was ended successfully!");
+        System.out.println("NodeTest.nodeTest was successfull!");
     }
 }

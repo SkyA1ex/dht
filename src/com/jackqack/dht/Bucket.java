@@ -1,6 +1,6 @@
 package com.jackqack.dht;
 
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -9,14 +9,39 @@ import java.util.logging.Logger;
 public class Bucket {
     private static final Logger LOG = Logger.getLogger(Bucket.class.toString());
 
-    public LinkedHashMap<Key, Node> nodes = new LinkedHashMap<Key, Node>(Constants.K);
+    private LinkedHashMap<Key, Node> nodes = new LinkedHashMap<Key, Node>(Constants.K, (float) 0.75, true);
 
-    public Node[] getClosestNodes(Node node, int limit) {
+    public void seenNode(Node node){
         synchronized (nodes) {
-
+            if (nodes.containsKey(node.getKey())) {
+                nodes.remove(node.getKey());
+                nodes.put(node.getKey(),node);
+            } else if (nodes.size() < Constants.K) {
+                nodes.put(node.getKey(),node);
+            } else {
+                // TODO: figure out what to do
+            }
         }
-        return null;
     }
 
+    public Node[] getClosestNodes(final Key key, int limit) {
+        synchronized (nodes) {
+            TreeMap<Key,Node> sortedNodes = new TreeMap<Key,Node>();
+            for(Node n: nodes.values()){
+                sortedNodes.put(n.getKey().dist(key), n);
+            }
+            return Arrays.copyOf(sortedNodes.values().toArray(new Node[0]),Math.min(nodes.size(), limit));
+        }
+    }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for(Node n: nodes.values()){
+            sb.append(n.toString());
+            sb.append("; ");
+        }
+
+        return sb.toString();
+    }
 }

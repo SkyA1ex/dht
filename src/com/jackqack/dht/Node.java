@@ -35,7 +35,7 @@ public class Node implements Serializable, Comparable<Node> {
 
     @Override
     public String toString() {
-        return "id: " + key.toString() + "; ip address: " + ipAddress + ";";
+        return "id=" + key.toString() + ", address=" + ipAddress;
     }
 
     @Override
