@@ -1,4 +1,4 @@
-package com.jackqack.dht;
+package com.jackqack.dht.node;
 
 import java.io.Serializable;
 import java.util.logging.Logger;

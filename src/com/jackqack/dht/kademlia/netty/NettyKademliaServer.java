@@ -1,5 +1,6 @@
-package com.jackqack.strategy.netty;
+package com.jackqack.dht.kademlia.netty;
 
+import com.jackqack.dht.kademlia.netty.BaseHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -11,14 +12,14 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 /**
  * Created by jackqack on 3/8/15.
  */
-public class NettyServer {
+public class NettyKademliaServer {
     // Порт сервера
     private int port;
     // Группа для хранения всех созданных каналов
     public static DefaultChannelGroup allChannels  = new
             DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    public NettyServer(int port) {
+    public NettyKademliaServer(int port) {
         this.port = port;
     }
 
@@ -39,7 +40,7 @@ public class NettyServer {
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
                             // Добавляем обработчик канала
-                            ch.pipeline().addLast(new BaseHandlerAdapter());
+                            ch.pipeline().addLast(new BaseHandler());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)

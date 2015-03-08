@@ -1,9 +1,9 @@
 package com.jackqack.test.dht;
 
-import com.jackqack.dht.Bucket;
-import com.jackqack.dht.Constants;
-import com.jackqack.dht.Key;
-import com.jackqack.dht.Node;
+import com.jackqack.dht.node.Bucket;
+import com.jackqack.dht.node.Constants;
+import com.jackqack.dht.node.Key;
+import com.jackqack.dht.node.Node;
 import org.junit.Test;
 
 

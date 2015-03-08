@@ -1,16 +1,17 @@
-package com.jackqack.strategy;
+package com.jackqack.dht.kademlia;
 
 import java.util.Map;
 
-import com.jackqack.dht.Key;
-import com.jackqack.dht.Node;
+import com.jackqack.dht.node.Constants;
+import com.jackqack.dht.node.Key;
+import com.jackqack.dht.node.Node;
 
 /**
  * Created by jackqack on 3/8/15.
  */
 public interface Kademlia {
 
-    public static final int IP_PORT = 8089;
+    public static final int IP_PORT = Constants.IP_PORT;
 
     public int ping(Node node);
 

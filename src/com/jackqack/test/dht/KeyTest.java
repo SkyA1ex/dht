@@ -1,6 +1,6 @@
 package com.jackqack.test.dht;
 
-import com.jackqack.dht.Key;
+import com.jackqack.dht.node.Key;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

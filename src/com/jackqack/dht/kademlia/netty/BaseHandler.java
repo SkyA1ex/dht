@@ -1,4 +1,4 @@
-package com.jackqack.strategy.netty;
+package com.jackqack.dht.kademlia.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
@@ -6,7 +6,7 @@ import io.netty.channel.*;
 /**
  * Created by jackqack on 3/8/15.
  */
-public class BaseHandlerAdapter extends ChannelHandlerAdapter{
+public class BaseHandler extends ChannelHandlerAdapter{
 
     // Метод вызывается при создании канала
     @Override
@@ -15,15 +15,15 @@ public class BaseHandlerAdapter extends ChannelHandlerAdapter{
         buf.writeBytes("hello\n".getBytes());
         ctx.writeAndFlush(buf);
 
-        NettyServer.allChannels.add(ctx.channel());
+        NettyKademliaServer.allChannels.add(ctx.channel());
         // Сообщить всем о подключенном пользователе и
         // вывести количество подключенных пользователей
-        for (Channel ch: NettyServer.allChannels){
+        for (Channel ch: NettyKademliaServer.allChannels){
             final ByteBuf buf2 = ch.alloc().buffer(50);
             StringBuilder sb = new StringBuilder();
             if (ctx.channel()!=ch)
                 sb.append("new user connected\n");
-            sb.append(NettyServer.allChannels.size());
+            sb.append(NettyKademliaServer.allChannels.size());
             sb.append(" users online\n");
             buf2.writeBytes(sb.toString().getBytes());
             ch.writeAndFlush(buf2);
@@ -43,7 +43,7 @@ public class BaseHandlerAdapter extends ChannelHandlerAdapter{
             return;
         }
         // Отправить сообщение всем пользователям, кроме самого отправителя
-        for (Channel ch: NettyServer.allChannels){
+        for (Channel ch: NettyKademliaServer.allChannels){
             if (ch == ctx.channel())
                 continue;
 
@@ -57,10 +57,10 @@ public class BaseHandlerAdapter extends ChannelHandlerAdapter{
             throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append("user has left the chat\n");
-        sb.append(NettyServer.allChannels.size());
+        sb.append(NettyKademliaServer.allChannels.size());
         sb.append(" users are online\n");
 
-        for (Channel ch: NettyServer.allChannels){
+        for (Channel ch: NettyKademliaServer.allChannels){
             final ByteBuf buf = ctx.alloc().buffer(30);
             buf.writeBytes(sb.toString().getBytes());
             ch.write(buf);

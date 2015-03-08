@@ -1,4 +1,4 @@
-package com.jackqack.dht;
+package com.jackqack.dht.node;
 
 import java.util.*;
 import java.util.logging.Logger;

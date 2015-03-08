@@ -1,8 +1,8 @@
 package com.jackqack.test.dht;
 
-import com.jackqack.dht.Key;
-import com.jackqack.dht.Node;
-import com.jackqack.dht.RoutingTable;
+import com.jackqack.dht.node.Key;
+import com.jackqack.dht.node.Node;
+import com.jackqack.dht.node.RoutingTable;
 import org.junit.Before;
 import org.junit.Test;
 
