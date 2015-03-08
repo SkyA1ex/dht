@@ -9,20 +9,24 @@ import java.util.logging.Logger;
 public class Node implements Serializable, Comparable<Node> {
     private static final Logger LOG = Logger.getLogger(Node.class.toString());
 
-    private Key key;
-    private String ipAddress;
+    private Key mKey;
+    private String mIpAddress;
+    private int mUdpPort;
 
-    public Node(Key key, String ipAddress) {
-        this.key = key;
-        this.ipAddress = ipAddress;
+    public Node(Key key, String ipAddress, int udpPort) {
+        this.mKey = key;
+        this.mIpAddress = ipAddress;
+        this.mUdpPort = udpPort;
     }
 
     public Key getKey() {
-        return key;
+        return mKey;
     }
 
+    public int getUdpPort() { return mUdpPort; }
+
     public String getIpAddress() {
-        return ipAddress;
+        return mIpAddress;
     }
 
     @Override
@@ -30,16 +34,16 @@ public class Node implements Serializable, Comparable<Node> {
         if (o == null || !(o instanceof Node))
             return false;
         Key k = ((Node) o).getKey();
-        return this.key.equals(k);
+        return this.mKey.equals(k);
     }
 
     @Override
     public String toString() {
-        return "id=" + key.toString() + ", address=" + ipAddress;
+        return "id=" + mKey.toString() + ", address=" + mIpAddress;
     }
 
     @Override
     public int compareTo(Node o) {
-        return key.compareTo(o.getKey());
+        return mKey.compareTo(o.getKey());
     }
 }

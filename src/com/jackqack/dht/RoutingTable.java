@@ -12,7 +12,7 @@ public class RoutingTable {
     private static final Logger LOG = Logger.getLogger(RoutingTable.class.toString());
     private final static int BUCKETS = Constants.BIT_LENGTH + 1;
 
-    Node myNode;
+    public final Node myNode;
     /*
      * Bucket i contains nodes on distance [2^i;2^(i+1))
      * It means that in i-th bucket contains nodes with
@@ -68,7 +68,7 @@ public class RoutingTable {
         StringBuilder sb = new StringBuilder();
         sb.append("My node: "+ myNode .toString()+ "\n");
         for(int i = 0; i < BUCKETS; ++i) {
-            sb.append("bucket " + String.valueOf(i) + " ");
+            sb.append("bucket " + String.valueOf(i) + ": ");
             sb.append(buckets[i].toString());
             sb.append("\n");
         }

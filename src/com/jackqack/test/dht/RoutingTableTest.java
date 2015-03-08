@@ -26,13 +26,13 @@ public class RoutingTableTest {
     @Before
     public void beforeTest(){
         nodes = new Node[7];
-        nodes[0] = new Node(new Key(Integer.parseInt("0000", 2)), "A");
-        nodes[1] = new Node(new Key(Integer.parseInt("0001", 2)), "B");
-        nodes[2] = new Node(new Key(Integer.parseInt("0001", 2)), "B");
-        nodes[3] = new Node(new Key(Integer.parseInt("0100", 2)), "D");
-        nodes[4] = new Node(new Key(Integer.parseInt("1001", 2)), "E");
-        nodes[5] = new Node(new Key(Integer.parseInt("1010", 2)), "F");
-        nodes[6] = new Node(new Key(Integer.parseInt("1111", 2)), "G");
+        nodes[0] = new Node(new Key(Integer.parseInt("0000", 2)), "A", 5500);
+        nodes[1] = new Node(new Key(Integer.parseInt("0001", 2)), "B", 5500);
+        nodes[2] = new Node(new Key(Integer.parseInt("0001", 2)), "B", 5500);
+        nodes[3] = new Node(new Key(Integer.parseInt("0100", 2)), "D", 5500);
+        nodes[4] = new Node(new Key(Integer.parseInt("1001", 2)), "E", 5500);
+        nodes[5] = new Node(new Key(Integer.parseInt("1010", 2)), "F", 5500);
+        nodes[6] = new Node(new Key(Integer.parseInt("1111", 2)), "G", 5500);
 
         table = new RoutingTable(nodes[5]);
 
@@ -46,7 +46,7 @@ public class RoutingTableTest {
     @Test
     public void getClosestNodesTest(){
         StringBuilder sb = new StringBuilder();
-        Node find = new Node(new Key(Integer.parseInt("0011", 2)), "C");
+        Node find = new Node(new Key(Integer.parseInt("0011", 2)), "C", 5500);
         Node[] closestNodes = table.getClosestNodes(find.getKey());
         Node[] neighbors = table.getNeighbors();
 
