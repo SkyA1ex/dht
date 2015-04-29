@@ -1,32 +1,43 @@
-package com.jackqack.dht.kademlia;
+package com.jackqack.dht;
 
-import com.jackqack.dht.DistributedHashTable;
+import com.jackqack.dht.kademlia.Kademlia;
 import com.jackqack.dht.kademlia.netty.NettyKademliaServer;
 import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;
 import com.jackqack.dht.node.RoutingTable;
-import com.jackqack.dht.kademlia.Kademlia;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Created by jackqack on 3/8/15.
  */
 public class NettyKademlia implements Kademlia, DistributedHashTable {
+    private static Logger LOG = Logger.getLogger(NettyKademlia.class.toString());
 
     private NettyKademliaServer mServer;
     private Node mNode;
     private RoutingTable mTable;
+    private Thread mServerThread;
 
-    public NettyKademlia(Node myNode) {
-        this.mServer = new NettyKademliaServer(Kademlia.IP_PORT);
+    public NettyKademlia(Node myNode, int ipPort) {
+        this.mServer = new NettyKademliaServer(ipPort);
         this.mNode = myNode;
         this.mTable = new RoutingTable(mNode);
     }
 
     public void run() throws Exception {
-        mServer.run();
-        System.out.println("Server is running");
+
+        mServerThread = new Thread(()-> {
+                try {
+                    mServer.run();
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
+            });
+        mServerThread.start();
+//        mServer.run();
+        LOG.info("Server (" + mNode.toString() + ") is running.");
     }
 
     public void bootstrap() { }
@@ -54,4 +65,9 @@ public class NettyKademlia implements Kademlia, DistributedHashTable {
     public Node[] findValue(Key key) {
         return new Node[0];
     }
+
+    public void sendMsg(String msg) {
+        mServer.sendMsg(msg);
+    }
+
 }

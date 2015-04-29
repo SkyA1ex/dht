@@ -11,11 +11,13 @@ public class Node implements Serializable, Comparable<Node> {
 
     private Key mKey;
     private String mIpAddress;
+    private int mTcpPort;
     private int mUdpPort;
 
-    public Node(Key key, String ipAddress, int udpPort) {
+    public Node(Key key, String ipAddress, int tcpPort, int udpPort) {
         this.mKey = key;
         this.mIpAddress = ipAddress;
+        this.mTcpPort = tcpPort;
         this.mUdpPort = udpPort;
     }
 
@@ -24,6 +26,8 @@ public class Node implements Serializable, Comparable<Node> {
     }
 
     public int getUdpPort() { return mUdpPort; }
+
+    public int getTcpPort() { return mTcpPort; }
 
     public String getIpAddress() {
         return mIpAddress;
@@ -39,7 +43,8 @@ public class Node implements Serializable, Comparable<Node> {
 
     @Override
     public String toString() {
-        return "id=" + mKey.toString() + ", address=" + mIpAddress;
+        return String.format("id=%s; address=%s; tcpPort=%d; udpPort=%d;",
+                mKey.toString(), mIpAddress, mTcpPort, mUdpPort);
     }
 
     @Override

@@ -17,12 +17,12 @@ public class KeyTest {
         Key k2 = new Key("Hey");
         Key k3 = new Key();
 
-        assertEquals(k1,k2);
-        assertEquals(k1.getId(),k2.getId());
+        assertEquals(k1, k2);
+        assertEquals(k1.getId(), k2.getId());
         assertEquals(k1.toString(), k2.toString());
-        assertEquals(k2.dist(k3).getId(),k2.getId());
+        assertEquals(k2.dist(k3).getId(), k2.getId());
 
-        System.out.println("KeyTest.keyStringTest was successfull!");
+        System.out.println("KeyTest.keyStringTest was successful!");
     }
 
     @Test
@@ -35,7 +35,7 @@ public class KeyTest {
         assertTrue(k3.compareTo(k1) == 1);
         assertTrue(k3.compareTo(k3) == 0);
 
-        System.out.println("KeyTest.keyIntTest was successfull!");
+        System.out.println("KeyTest.keyIntTest was successful!");
     }
 
     @Test
@@ -51,7 +51,7 @@ public class KeyTest {
         assertEquals(k1.dist(k7).rank(), 4);
 
 
-        System.out.println("KeyTest.keyIntTest was successfull!");
+        System.out.println("KeyTest.keyRankTest was successful!");
     }
 
 

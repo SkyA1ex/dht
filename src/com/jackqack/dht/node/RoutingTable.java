@@ -40,10 +40,9 @@ public class RoutingTable {
     /*
      * Returns up to Constants.K closest to myNode nodes
      */
-    public Node[] getNeighbors(){
+    public Node[] getNeighbors() {
         return getClosestNodes(myNode.getKey());
     }
-
 
     /*
      * Return up to Constants.K closest to Key nodes
@@ -57,7 +56,7 @@ public class RoutingTable {
             List<Node> list = Arrays.asList(buckets[i].getClosestNodes(key, limit));
             closestNodes.addAll(list);
             limit -= list.size();
-            if(limit == 0)
+            if (limit == 0)
                 break;
         }
         return closestNodes.toArray(new Node[0]);

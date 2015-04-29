@@ -1,62 +1,96 @@
 package com.jackqack.dht.kademlia.netty;
 
-import com.jackqack.dht.kademlia.netty.BaseHandler;
+import com.jackqack.dht.kademlia.netty.protocol.Message;
+import com.jackqack.dht.kademlia.netty.protocol.PingMessage;
+import com.jackqack.dht.node.Node;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 /**
  * Created by jackqack on 3/8/15.
  */
 public class NettyKademliaServer {
-    // Порт сервера
-    private int port;
-    // Группа для хранения всех созданных каналов
-    public static DefaultChannelGroup allChannels  = new
-            DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    public NettyKademliaServer(int port) {
-        this.port = port;
+    private Node mNode;
+    private ServerBootstrap bootstrap;
+    private ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+    private EventLoopGroup workerGroup = new NioEventLoopGroup();
+    private ChannelFuture serverFuture;
+
+    public NettyKademliaServer(Node node) {
+        mNode = node;
     }
 
     public void run() throws Exception {
+        bootstrap = new ServerBootstrap();
+        bootstrap.group(bossGroup, workerGroup);
+        bootstrap.channel(NioServerSocketChannel.class);
+        bootstrap.handler(new LoggingHandler(LogLevel.INFO));
+        bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+                ch.pipeline().addLast(new ObjectEncoder(),
+                        new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                        new PingHandler());
+            }
+        });
 
-        // boss принимает входящие соединения
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        // worker обрабатывает траффик соединения, после того
-        // как boss регистрирует соединение
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        serverFuture = bootstrap.bind(mNode.getTcpPort()).sync();
+    }
 
-        try {
-            // Вспомогательный класс для создания сервера
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class) // Каналы такого класса будут создаваться
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        public void initChannel(SocketChannel ch) throws Exception {
-                            // Добавляем обработчик канала
-                            ch.pipeline().addLast(new BaseHandler());
-                        }
-                    })
-                    .option(ChannelOption.SO_BACKLOG, 128)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
-
-            // Bind and start to accept incoming connections.
-            ChannelFuture f = b.bind(port).sync();
-
-            // Wait until the server socket is closed.
-            // In this example, this does not happen, but you can do that to gracefully
-            // shut down your server.
-            f.channel().closeFuture().sync();
-        } finally {
-            workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
+    public void sendServerMessage(Message msg) {
+        System.out.printf("%d channels connected:\n", channels.size());
+        for (Channel ch : channels) {
+            System.out.printf("local address: %s, ", ch.localAddress().toString());
+            System.out.printf("remote address: %s\n", ch.remoteAddress().toString());
+            ch.writeAndFlush(msg);
         }
+    }
+
+    public void waitServer() throws Exception {
+        serverFuture.channel().closeFuture().sync();
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
+    }
+
+    // Return ping to host im ms
+    public double pingTo(String host, int port) throws Exception {
+        final PingHandler pingHandler = new PingHandler();
+        Bootstrap b = new Bootstrap();
+        b.group(workerGroup);
+        b.channel(NioSocketChannel.class);
+        b.option(ChannelOption.TCP_NODELAY, true);
+        b.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+                ChannelPipeline p = ch.pipeline();
+                //p.addLast(new LoggingHandler(LogLevel.INFO));
+                p.addLast(new ObjectEncoder(),
+                        new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                        pingHandler);
+            }
+        });
+
+        // Start the client.
+        ChannelFuture f = b.connect(host, port).sync();
+        f.channel().writeAndFlush(new PingMessage(mNode)).sync();
+        f.channel().read();
+        f.channel().closeFuture().sync();
+        return pingHandler.getPing();
     }
 
 }
