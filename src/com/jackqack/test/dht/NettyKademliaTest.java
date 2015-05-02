@@ -1,6 +1,6 @@
 package com.jackqack.test.dht;
 
-import com.jackqack.dht.kademlia.netty.NettyKademliaDht;
+import com.jackqack.dht.NettyKademliaDht;
 import com.jackqack.dht.node.Constants;
 import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;

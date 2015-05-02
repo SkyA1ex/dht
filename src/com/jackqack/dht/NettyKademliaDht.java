@@ -1,7 +1,8 @@
-package com.jackqack.dht.kademlia.netty;
+package com.jackqack.dht;
 
 import com.jackqack.dht.DistributedHashTable;
 import com.jackqack.dht.kademlia.Kademlia;
+import com.jackqack.dht.kademlia.netty.NettyServer;
 import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;
 import com.jackqack.dht.node.RoutingTable;
