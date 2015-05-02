@@ -1,8 +1,8 @@
-package com.jackqack.dht.kademlia.netty;
+package com.jackqack.dht.netty;
 
-import com.jackqack.dht.kademlia.netty.handlers.PingHandler;
-import com.jackqack.dht.kademlia.netty.protocol.Message;
-import com.jackqack.dht.kademlia.netty.protocol.PingMessage;
+import com.jackqack.dht.netty.handlers.PingHandler;
+import com.jackqack.dht.netty.protocol.Message;
+import com.jackqack.dht.netty.protocol.PingMessage;
 import com.jackqack.dht.node.Node;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -20,23 +20,28 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
+import java.net.ConnectException;
+import java.util.concurrent.TimeoutException;
+
 /**
  * Created by jackqack on 3/8/15.
  */
-public class NettyServer {
+public class NettyKademliaServer {
 
     private Node mNode;
+    private INettyServerCallbacks mCallbacks;
     private ServerBootstrap bootstrap;
     private ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private EventLoopGroup bossGroup = new NioEventLoopGroup(1);
     private EventLoopGroup workerGroup = new NioEventLoopGroup();
     private ChannelFuture serverFuture;
 
-    public NettyServer(Node node) {
+    public NettyKademliaServer(Node node, INettyServerCallbacks callbacks) {
         mNode = node;
+        mCallbacks = callbacks;
     }
 
-    public void run() throws Exception {
+    public void run() throws InterruptedException {
         bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup);
         bootstrap.channel(NioServerSocketChannel.class);
@@ -46,7 +51,7 @@ public class NettyServer {
             public void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                        new PingHandler());
+                        new PingHandler(mCallbacks));
             }
         });
 
@@ -69,12 +74,13 @@ public class NettyServer {
     }
 
     // Return ping to host im ms
-    public long pingTo(Node toNode) throws InterruptedException {
-        final PingHandler pingHandler = new PingHandler();
+    public long pingTo(Node toNode) throws InterruptedException, ConnectException, TimeoutException {
+        final PingHandler pingHandler = new PingHandler(mCallbacks);
         Bootstrap b = new Bootstrap();
         b.group(workerGroup);
         b.channel(NioSocketChannel.class);
         b.option(ChannelOption.TCP_NODELAY, true);
+        b.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
         b.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
@@ -93,5 +99,6 @@ public class NettyServer {
         f.channel().closeFuture().sync();
         return pingHandler.getPing();
     }
+
 
 }

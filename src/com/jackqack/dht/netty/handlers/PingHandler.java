@@ -1,6 +1,8 @@
-package com.jackqack.dht.kademlia.netty.handlers;
+package com.jackqack.dht.netty.handlers;
 
-import com.jackqack.dht.kademlia.netty.protocol.PingMessage;
+import com.jackqack.dht.netty.INettyServerCallbacks;
+import com.jackqack.dht.netty.NettyKademliaServer;
+import com.jackqack.dht.netty.protocol.PingMessage;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -11,6 +13,12 @@ import io.netty.channel.ChannelPromise;
 public class PingHandler extends ChannelHandlerAdapter {
 
     private long pingMills;
+    private INettyServerCallbacks mCallbacks;
+
+
+    public PingHandler(INettyServerCallbacks callbacks) {
+        mCallbacks = callbacks;
+    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -27,10 +35,12 @@ public class PingHandler extends ChannelHandlerAdapter {
             pingMessage.setAnswer();
             System.out.printf("Sent ping answer to %s\n", pingMessage.getFromNode().toString());
             ctx.writeAndFlush(pingMessage);
+            mCallbacks.onPingSuccessful(pingMessage.getFromNode());
         } // if received ping answer then close channel
         else {
             System.out.printf("Received ping answer from %s\n", pingMessage.getToNode().toString());
             pingMills = System.currentTimeMillis() - pingMills;
+            mCallbacks.onPingSuccessful(pingMessage.getToNode());
         }
     }
 
