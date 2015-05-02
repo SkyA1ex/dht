@@ -1,5 +1,6 @@
 package com.jackqack.dht.kademlia.netty;
 
+import com.jackqack.dht.kademlia.netty.handlers.PingHandler;
 import com.jackqack.dht.kademlia.netty.protocol.Message;
 import com.jackqack.dht.kademlia.netty.protocol.PingMessage;
 import com.jackqack.dht.node.Node;
@@ -22,7 +23,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 /**
  * Created by jackqack on 3/8/15.
  */
-public class NettyKademliaServer {
+public class NettyServer {
 
     private Node mNode;
     private ServerBootstrap bootstrap;
@@ -31,7 +32,7 @@ public class NettyKademliaServer {
     private EventLoopGroup workerGroup = new NioEventLoopGroup();
     private ChannelFuture serverFuture;
 
-    public NettyKademliaServer(Node node) {
+    public NettyServer(Node node) {
         mNode = node;
     }
 
@@ -61,14 +62,14 @@ public class NettyKademliaServer {
         }
     }
 
-    public void waitServer() throws Exception {
+    public void waitClose() throws InterruptedException {
         serverFuture.channel().closeFuture().sync();
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
     }
 
     // Return ping to host im ms
-    public double pingTo(String host, int port) throws Exception {
+    public long pingTo(Node toNode) throws InterruptedException {
         final PingHandler pingHandler = new PingHandler();
         Bootstrap b = new Bootstrap();
         b.group(workerGroup);
@@ -86,8 +87,8 @@ public class NettyKademliaServer {
         });
 
         // Start the client.
-        ChannelFuture f = b.connect(host, port).sync();
-        f.channel().writeAndFlush(new PingMessage(mNode)).sync();
+        ChannelFuture f = b.connect(toNode.getIpAddress(), toNode.getTcpPort()).sync();
+        f.channel().writeAndFlush(new PingMessage(mNode, toNode)).sync();
         f.channel().read();
         f.channel().closeFuture().sync();
         return pingHandler.getPing();

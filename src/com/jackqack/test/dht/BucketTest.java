@@ -17,7 +17,7 @@ public class BucketTest {
         Bucket b = new Bucket();
         Node[] data = new Node[Constants.K];
         for(int i = 0; i < Constants.K; ++i) {
-            data[i] = new Node(new Key(i), String.valueOf(i), 5500);
+            data[i] = new Node(new Key(i), String.valueOf(i), 5511, 5500);
             b.seenNode(data[i]);
         }
 

@@ -14,8 +14,8 @@ public class NodeTest {
 
     @Test
     public void nodeTest() {
-        Node n1 = new Node(new Key(12), "localhost", 5500);
-        Node n2 = new Node(new Key(10), "localhost", 5500);
+        Node n1 = new Node(new Key(12), "localhost", 5511, 5500);
+        Node n2 = new Node(new Key(10), "localhost", 5511, 5500);
 
         assertNotEquals(n1, n2);
         assertTrue(n1.compareTo(n2) == 1);

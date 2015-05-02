@@ -1,5 +1,6 @@
 package com.jackqack.dht.node;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -10,7 +11,7 @@ import java.util.logging.Logger;
 /**
  * Created by jackqack on 3/3/15.
  */
-public final class Key implements Comparable<Key> {
+public final class Key implements Serializable, Comparable<Key> {
     private final static Logger LOG = Logger.getLogger(Key.class.toString());
 
     private BitSet id;

@@ -1,4 +1,4 @@
-package com.jackqack.dht.kademlia.netty;
+package com.jackqack.dht.kademlia.netty.handlers;
 
 import com.jackqack.dht.kademlia.netty.protocol.PingMessage;
 import io.netty.channel.ChannelHandlerAdapter;
@@ -23,13 +23,13 @@ public class PingHandler extends ChannelHandlerAdapter {
         PingMessage pingMessage = (PingMessage) msg;
         // if received ping request then send ping packet back sender
         if (pingMessage.isRequest()) {
-            System.out.printf("Received ping request from %s\n", pingMessage.getNode().toString());
+            System.out.printf("Received ping request from %s\n", pingMessage.getFromNode().toString());
             pingMessage.setAnswer();
-            System.out.printf("Sent ping answer to %s\n", pingMessage.getNode().toString());
+            System.out.printf("Sent ping answer to %s\n", pingMessage.getFromNode().toString());
             ctx.writeAndFlush(pingMessage);
         } // if received ping answer then close channel
         else {
-            System.out.printf("Received ping answer from %s\n", pingMessage.getNode().toString());
+            System.out.printf("Received ping answer from %s\n", pingMessage.getToNode().toString());
             pingMills = System.currentTimeMillis() - pingMills;
         }
     }
@@ -43,7 +43,7 @@ public class PingHandler extends ChannelHandlerAdapter {
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         super.write(ctx, msg, promise);
         PingMessage pingMessage = (PingMessage) msg;
-        System.out.printf("Sent ping request to %s\n", pingMessage.getNode().toString());
+        System.out.printf("Sent ping request to %s\n", pingMessage.getToNode().toString());
         pingMills = System.currentTimeMillis();
     }
 
@@ -60,7 +60,7 @@ public class PingHandler extends ChannelHandlerAdapter {
         super.exceptionCaught(ctx, cause);
     }
 
-    public double getPing() {
-        return (double) pingMills;
+    public long getPing() {
+        return pingMills;
     }
 }

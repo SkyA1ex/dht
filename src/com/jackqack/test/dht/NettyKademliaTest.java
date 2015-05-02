@@ -1,6 +1,6 @@
 package com.jackqack.test.dht;
 
-import com.jackqack.dht.NettyKademlia;
+import com.jackqack.dht.kademlia.netty.NettyKademliaDht;
 import com.jackqack.dht.node.Constants;
 import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;
@@ -14,24 +14,20 @@ public class NettyKademliaTest {
 
     @Test
     public void MainTest(){
-        Node myNode1 = new Node(new Key(0001), "192.168.0.108", Constants.UDP_PORT);
-        Node myNode2 = new Node(new Key(0002), "192.168.0.110", Constants.UDP_PORT);
+        Node node1 = new Node(new Key(0001), "127.0.0.1", 8080, Constants.UDP_PORT);
+        Node node2 = new Node(new Key(0002), "127.0.0.1", 8081, Constants.UDP_PORT);
+        NettyKademliaDht dht1 = new NettyKademliaDht(node1);
+        NettyKademliaDht dht2 = new NettyKademliaDht(node2);
         try {
-            NettyKademlia dht1 = new NettyKademlia(myNode1, 8089);
-            NettyKademlia dht2 = new NettyKademlia(myNode2, 8090);
             dht1.run();
             dht2.run();
+            dht1.ping(node2);
 
-            while(true) {
-                Thread.sleep(5000);
-                Node node = new Node(Key.getRandomKey(), "11.11.11.11", 8089);
-                dht1.sendMsg("hey");
-                dht2.sendMsg("hey");
-//                System.out.printf("%d users connected;\n", dht1.getUsersConnected());
-
-            }
         } catch (Exception e) {
             System.err.println(e.toString());
+        } finally {
+            dht1.waitClose();
+            dht2.waitClose();
         }
     }
 }

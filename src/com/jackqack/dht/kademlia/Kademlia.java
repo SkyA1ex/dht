@@ -11,9 +11,9 @@ import com.jackqack.dht.node.Node;
  */
 public interface Kademlia {
 
-    public static final int IP_PORT = Constants.IP_PORT;
+    public static final int IP_PORT = Constants.TCP_PORT;
 
-    public int ping(Node node);
+    public long ping(Node node);
 
     public void store(Node node, Map<Key, Object> o);
 
