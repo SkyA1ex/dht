@@ -19,12 +19,14 @@ public class FindNodeMessage implements Serializable {
     private boolean request;
     private Key key;
     private Node[] nodes;
+    private int limit;
 
-    public FindNodeMessage(Node fromNode, Node toNode, Key key) {
+    public FindNodeMessage(Node fromNode, Node toNode, Key key, int limit) {
         this.fromNode = fromNode;
         this.toNode = toNode;
         this.request = true;
         this.key = key;
+        this.limit = limit;
         nodes = new Node[]{};
     }
 
@@ -37,6 +39,8 @@ public class FindNodeMessage implements Serializable {
     }
 
     public Key getKey() { return key; }
+
+    public int getLimit() { return limit; }
 
     public Node[] getNodes() {return nodes; }
 

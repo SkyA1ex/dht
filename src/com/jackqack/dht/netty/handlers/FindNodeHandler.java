@@ -1,7 +1,8 @@
 package com.jackqack.dht.netty.handlers;
 
 import com.jackqack.dht.netty.INettyServerCallbacks;
-import com.jackqack.dht.netty.protocol.PingMessage;
+import com.jackqack.dht.netty.protocol.FindNodeMessage;
+import com.jackqack.dht.node.Node;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -9,16 +10,15 @@ import io.netty.channel.ChannelPromise;
 import java.util.logging.Logger;
 
 /**
- * Created by jackqack on 4/26/15.
+ * Created by jackqack on 5/3/15.
  */
-public class PingHandler extends ChannelHandlerAdapter {
-    private static final Logger LOG = Logger.getLogger(PingHandler.class.toString());
-
-    private long pingMills;
+public class FindNodeHandler extends ChannelHandlerAdapter {
+    private static final Logger LOG = Logger.getLogger(FindNodeHandler.class.toString());
+    
     private INettyServerCallbacks mCallbacks;
 
 
-    public PingHandler(INettyServerCallbacks callbacks) {
+    public FindNodeHandler(INettyServerCallbacks callbacks) {
         mCallbacks = callbacks;
     }
 
@@ -30,21 +30,22 @@ public class PingHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!(msg instanceof PingMessage))
+        if (!(msg instanceof FindNodeMessage))
             return;
-        PingMessage pingMessage = (PingMessage) msg;
-        // if received ping request then send ping packet back sender
-        if (pingMessage.isRequest()) {
-            LOG.info(String.format("Received ping request from %s\n", pingMessage.getFromNode().toString()));
-            pingMessage.setAnswer();
-            LOG.info(String.format("Sent ping answer to %s\n", pingMessage.getFromNode().toString()));
-            ctx.writeAndFlush(pingMessage);
-            mCallbacks.seenNode(pingMessage.getFromNode());
-        } // if received ping answer then close channel
+        FindNodeMessage message = (FindNodeMessage) msg;
+        // attach K closest nodes to msg and send packet back to the sender
+        if (message.isRequest()) {
+            LOG.info(String.format("Received findNode request from %s\n", message.getFromNode().toString()));
+            message.setAnswer();
+            message.setNodes(mCallbacks.getClosestNodes(message.getKey(), message.getLimit()));
+            LOG.info(String.format("Sent findNode answer to %s\n", message.getFromNode().toString()));
+            ctx.writeAndFlush(message);
+        } // save all nodes in routing table and close the channel
         else {
-            LOG.info(String.format("Received ping answer from %s\n", pingMessage.getToNode().toString()));
-            pingMills = System.currentTimeMillis() - pingMills;
-            mCallbacks.seenNode(pingMessage.getToNode());
+            LOG.info(String.format("Received findNode answer from %s\n", message.getToNode().toString()));
+            for(Node node: message.getNodes()) {
+                mCallbacks.seenNode(node);
+            }
         }
     }
 
@@ -56,11 +57,10 @@ public class PingHandler extends ChannelHandlerAdapter {
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         super.write(ctx, msg, promise);
-        if (!(msg instanceof PingMessage))
+        if (!(msg instanceof FindNodeMessage))
             return;
-        PingMessage pingMessage = (PingMessage) msg;
-        LOG.info(String.format("Sent ping request to %s\n", pingMessage.getToNode().toString()));
-        pingMills = System.currentTimeMillis();
+        FindNodeMessage message = (FindNodeMessage) msg;
+        LOG.info(String.format("Sent findNode request to %s\n", message.getToNode().toString()));
     }
 
     @Override
@@ -76,7 +76,4 @@ public class PingHandler extends ChannelHandlerAdapter {
         super.exceptionCaught(ctx, cause);
     }
 
-    public long getPing() {
-        return pingMills;
-    }
 }

@@ -38,18 +38,19 @@ public class RoutingTable {
     }
 
     /*
-     * Returns up to Constants.K closest to myNode nodes
+     * Returns up to 'Constants.K' closest to myNode nodes
      */
     public Node[] getNeighbors() {
-        return getClosestNodes(myNode.getKey());
+        return getClosestNodes(myNode.getKey(), Constants.K);
     }
 
     /*
-     * Return up to Constants.K closest to Key nodes
+     * Return up to 'limit' closest to Key nodes
      */
-    public Node[] getClosestNodes(Key key) {
+    public Node[] getClosestNodes(Key key, int limit) {
+        if (limit <= 0)
+            return new Node[0];
         ArrayList<Node> closestNodes = new ArrayList<Node>(Constants.K);
-        int limit = Constants.K;
 
         int i = myNode.getKey().dist(key).rank();
         for(; i < BUCKETS; ++i) {

@@ -1,8 +1,11 @@
 package com.jackqack.dht.netty;
 
+import com.jackqack.dht.netty.handlers.FindNodeHandler;
 import com.jackqack.dht.netty.handlers.PingHandler;
+import com.jackqack.dht.netty.protocol.FindNodeMessage;
 import com.jackqack.dht.netty.protocol.Message;
 import com.jackqack.dht.netty.protocol.PingMessage;
+import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -21,6 +24,7 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.net.ConnectException;
+import java.sql.Time;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -51,6 +55,7 @@ public class NettyKademliaServer {
             public void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                        new FindNodeHandler(mCallbacks),
                         new PingHandler(mCallbacks));
             }
         });
@@ -73,7 +78,9 @@ public class NettyKademliaServer {
         workerGroup.shutdownGracefully();
     }
 
-    // Return ping to host im ms
+    /**
+        Return ping to host im ms
+     */
     public long pingTo(Node toNode) throws InterruptedException, ConnectException, TimeoutException {
         final PingHandler pingHandler = new PingHandler(mCallbacks);
         Bootstrap b = new Bootstrap();
@@ -100,5 +107,60 @@ public class NettyKademliaServer {
         return pingHandler.getPing();
     }
 
+    /**
+        Send request to find and return up to 'limit' closest to 'key' nodes.
+        After receiving answer add returned nodes to routing table.
+        TODO: make method asynchronous!!
+     */
+    public void findNodes(Node toNode, Key key, int limit) throws InterruptedException {
+        final FindNodeHandler findNodeHandler = new FindNodeHandler(mCallbacks);
+        Bootstrap b = new Bootstrap();
+        b.group(workerGroup);
+        b.channel(NioSocketChannel.class);
+        b.option(ChannelOption.TCP_NODELAY, true);
+        b.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
+        b.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+                ChannelPipeline p = ch.pipeline();
+                //p.addLast(new LoggingHandler(LogLevel.INFO));
+                p.addLast(new ObjectEncoder(),
+                        new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                        findNodeHandler);
+            }
+        });
+
+        // Start the client.
+        ChannelFuture f = b.connect(toNode.getIpAddress(), toNode.getTcpPort()).sync();
+        f.channel().writeAndFlush(new FindNodeMessage(mNode, toNode, key, limit)).sync();
+        f.channel().read();
+        f.channel().closeFuture().sync();
+    }
+
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
