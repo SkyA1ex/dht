@@ -1,5 +1,6 @@
 package com.jackqack.test.dht;
 
+import com.jackqack.dht.node.Constants;
 import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;
 import com.jackqack.dht.node.RoutingTable;
@@ -47,7 +48,7 @@ public class RoutingTableTest {
     public void getClosestNodesTest(){
         StringBuilder sb = new StringBuilder();
         Node find = new Node(new Key(Integer.parseInt("0011", 2)), "C", 5511, 5500);
-        Node[] closestNodes = table.getClosestNodes(find.getKey());
+        Node[] closestNodes = table.getClosestNodes(find.getKey(), Constants.K);
         Node[] neighbors = table.getNeighbors();
 
         sb.append("\nClosestNodes to " + find.toString()  + " length: " + String.valueOf(closestNodes.length) + "\n");

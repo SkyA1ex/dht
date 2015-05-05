@@ -30,10 +30,12 @@ public class FindNodeHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!(msg instanceof FindNodeMessage))
+        if (!(msg instanceof FindNodeMessage)) {
+            ctx.fireChannelRead(msg);
             return;
+        }
         FindNodeMessage message = (FindNodeMessage) msg;
-        // attach K closest nodes to msg and send packet back to the sender
+        // attach K closest to 'key' nodes to msg and send packet back to the sender
         if (message.isRequest()) {
             LOG.info(String.format("Received findNode request from %s\n", message.getFromNode().toString()));
             message.setAnswer();
@@ -57,8 +59,9 @@ public class FindNodeHandler extends ChannelHandlerAdapter {
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         super.write(ctx, msg, promise);
-        if (!(msg instanceof FindNodeMessage))
+        if (!(msg instanceof FindNodeMessage)) {
             return;
+        }
         FindNodeMessage message = (FindNodeMessage) msg;
         LOG.info(String.format("Sent findNode request to %s\n", message.getToNode().toString()));
     }

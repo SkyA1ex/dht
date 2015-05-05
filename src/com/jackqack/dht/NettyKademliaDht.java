@@ -77,9 +77,9 @@ public class NettyKademliaDht implements DistributedHashTable {
 
     /**
      * 1. Scans K closest to 'key' nodes in routing table.
-     * 2. For a < K nodes sends recursive findNode request and update
+     * 2. For a < K nodes send recursive findNode requests and update
      *    routing table after receiving answer.
-     * 3. Decrease 'a' and repeat step to while a > 0.
+     * 3. Decrease 'a' and repeat step two while a > 0.
      * 4. Return K closest to 'key' nodes.
      * @param key
      * @return
@@ -89,7 +89,7 @@ public class NettyKademliaDht implements DistributedHashTable {
         try {
             do {
                 // Return up to 'a' closest nodes to key stored in routing table
-                Node[] nodes = mTable.getClosestNodes(key, a);
+                Node[] nodes = mTable.getClosestNodes(key, a); // TODO: prevent returning nodes with 'mNode' key value
                 for(Node node: nodes) {
                     mServer.findNodes(node, key, a);
                 }

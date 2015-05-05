@@ -30,8 +30,10 @@ public class PingHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!(msg instanceof PingMessage))
+        if (!(msg instanceof PingMessage)) {
+            ctx.fireChannelRead(msg);
             return;
+        }
         PingMessage pingMessage = (PingMessage) msg;
         // if received ping request then send ping packet back sender
         if (pingMessage.isRequest()) {
@@ -56,8 +58,9 @@ public class PingHandler extends ChannelHandlerAdapter {
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         super.write(ctx, msg, promise);
-        if (!(msg instanceof PingMessage))
+        if (!(msg instanceof PingMessage)) {
             return;
+        }
         PingMessage pingMessage = (PingMessage) msg;
         LOG.info(String.format("Sent ping request to %s\n", pingMessage.getToNode().toString()));
         pingMills = System.currentTimeMillis();

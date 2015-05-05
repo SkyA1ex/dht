@@ -55,8 +55,8 @@ public class NettyKademliaServer {
             public void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                        new FindNodeHandler(mCallbacks),
-                        new PingHandler(mCallbacks));
+                        new PingHandler(mCallbacks),
+                        new FindNodeHandler(mCallbacks));
             }
         });
 
