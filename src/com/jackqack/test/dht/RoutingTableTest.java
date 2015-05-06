@@ -35,7 +35,12 @@ public class RoutingTableTest {
         nodes[5] = new Node(new Key(Integer.parseInt("1010", 2)), "F", 5511, 5500);
         nodes[6] = new Node(new Key(Integer.parseInt("1111", 2)), "G", 5511, 5500);
 
-        table = new RoutingTable(nodes[5]);
+        table = new RoutingTable(nodes[5]) {
+            @Override
+            public long ping(Node node) {
+                return 1;
+            }
+        };
 
         for(Node n: nodes) {
             table.seenNode(n);

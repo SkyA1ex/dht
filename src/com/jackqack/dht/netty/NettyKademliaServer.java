@@ -79,7 +79,7 @@ public class NettyKademliaServer {
     }
 
     /**
-        Return ping to host im ms
+        Return pingTo to host im ms
      */
     public long pingTo(Node toNode) throws InterruptedException, ConnectException, TimeoutException {
         final PingHandler pingHandler = new PingHandler(mCallbacks);

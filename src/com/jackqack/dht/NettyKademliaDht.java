@@ -25,7 +25,12 @@ public class NettyKademliaDht implements DistributedHashTable {
 
     public NettyKademliaDht(Node node) {
         mNode = node;
-        mTable = new RoutingTable(mNode);
+        mTable = new RoutingTable(mNode) {
+            @Override
+            public long ping(Node node) {
+                return pingTo(node);
+            }
+        };
         mCallbacks = new NettyServerCallbacks();
         mServer = new NettyKademliaServer(mNode, mCallbacks);
     }
@@ -50,8 +55,8 @@ public class NettyKademliaDht implements DistributedHashTable {
         return null;
     }
 
-    public long ping(Node node) {
-        long delay = 0;
+    public long pingTo(Node node) {
+        long delay = -1;
         try {
             delay = mServer.pingTo(node);
         } catch (InterruptedException e) {
@@ -72,7 +77,6 @@ public class NettyKademliaDht implements DistributedHashTable {
         }
     }
 
-
     private void store(Node node, Map<Key, Object> o) { }
 
     /**
@@ -89,7 +93,7 @@ public class NettyKademliaDht implements DistributedHashTable {
         try {
             do {
                 // Return up to 'a' closest nodes to key stored in routing table
-                Node[] nodes = mTable.getClosestNodes(key, a); // TODO: prevent returning nodes with 'mNode' key value
+                Node[] nodes = mTable.getClosestNodes(key, a);
                 for(Node node: nodes) {
                     mServer.findNodes(node, key, a);
                 }

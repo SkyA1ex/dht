@@ -35,16 +35,16 @@ public class PingHandler extends ChannelHandlerAdapter {
             return;
         }
         PingMessage pingMessage = (PingMessage) msg;
-        // if received ping request then send ping packet back sender
+        // if received pingTo request then send pingTo packet back sender
         if (pingMessage.isRequest()) {
-            LOG.info(String.format("Received ping request from %s\n", pingMessage.getFromNode().toString()));
+            LOG.info(String.format("Received pingTo request from %s\n", pingMessage.getFromNode().toString()));
             pingMessage.setAnswer();
-            LOG.info(String.format("Sent ping answer to %s\n", pingMessage.getFromNode().toString()));
+            LOG.info(String.format("Sent pingTo answer to %s\n", pingMessage.getFromNode().toString()));
             ctx.writeAndFlush(pingMessage);
             mCallbacks.seenNode(pingMessage.getFromNode());
-        } // if received ping answer then close channel
+        } // if received pingTo answer then close channel
         else {
-            LOG.info(String.format("Received ping answer from %s\n", pingMessage.getToNode().toString()));
+            LOG.info(String.format("Received pingTo answer from %s\n", pingMessage.getToNode().toString()));
             pingMills = System.currentTimeMillis() - pingMills;
             mCallbacks.seenNode(pingMessage.getToNode());
         }
@@ -62,7 +62,7 @@ public class PingHandler extends ChannelHandlerAdapter {
             return;
         }
         PingMessage pingMessage = (PingMessage) msg;
-        LOG.info(String.format("Sent ping request to %s\n", pingMessage.getToNode().toString()));
+        LOG.info(String.format("Sent pingTo request to %s\n", pingMessage.getToNode().toString()));
         pingMills = System.currentTimeMillis();
     }
 
