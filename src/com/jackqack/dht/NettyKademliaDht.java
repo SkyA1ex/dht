@@ -85,7 +85,7 @@ public class NettyKademliaDht implements DistributedHashTable {
      */
     public void findNode(Node toNode, Key key) {
         try {
-            mServer.findNodes(toNode, key);
+            mServer.findNode(toNode, key);
         } catch (ConnectException e) {
             LOG.info("Can't connect to node " + toNode.toString());
         }
@@ -94,6 +94,13 @@ public class NettyKademliaDht implements DistributedHashTable {
         }
     }
 
+    /**
+     * If 'toNode' stores value with key 'key' then it return the stored value.
+     * Else returns K closest to 'key' nodes from 'toNode' routing table
+     * and updates senders's routing table.
+     * @param key
+     * @return
+     */
     private Node[] findValue(Key key) {
         return new Node[0];
     }

@@ -1,5 +1,6 @@
 package com.jackqack.dht.netty;
 
+import com.jackqack.dht.file.SimpleData;
 import com.jackqack.dht.netty.handlers.FindNodeHandler;
 import com.jackqack.dht.netty.handlers.PingHandler;
 import com.jackqack.dht.netty.protocol.FindNodeMessage;
@@ -25,6 +26,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.net.ConnectException;
 import java.sql.Time;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -112,7 +114,7 @@ public class NettyKademliaServer {
         After receiving answer add returned nodes to routing table.
         TODO: make method asynchronous!!
      */
-    public void findNodes(Node toNode, Key key) throws InterruptedException, ConnectException {
+    public void findNode(Node toNode, Key key) throws InterruptedException, ConnectException {
         final FindNodeHandler findNodeHandler = new FindNodeHandler(mCallbacks);
         Bootstrap b = new Bootstrap();
         b.group(workerGroup);
