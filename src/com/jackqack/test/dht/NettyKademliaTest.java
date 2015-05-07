@@ -32,7 +32,7 @@ public class NettyKademliaTest {
             dht1.run();
             dht2.run();
             dht1.pingTo(node2);
-            dht1.findNode(node5.getKey());
+            dht1.findNode(node2, node5.getKey());
         } catch (InterruptedException e) {
             System.err.println(e.toString());
         } finally {

@@ -80,30 +80,18 @@ public class NettyKademliaDht implements DistributedHashTable {
     private void store(Node node, Map<Key, Object> o) { }
 
     /**
-     * 1. Scans K closest to 'key' nodes in routing table.
-     * 2. For a < K nodes send recursive findNode requests and update
-     *    routing table after receiving answer.
-     * 3. Decrease 'a' and repeat step two while a > 0.
-     * 4. Return K closest to 'key' nodes.
-     * @param key
-     * @return
+     * Returns K closest to 'key' nodes from 'toNode' routing table
+     * and updates sender's routing table
      */
-    public Node[] findNode(Key key) {
-        int a = Constants.K;
+    public void findNode(Node toNode, Key key) {
         try {
-            do {
-                // Return up to 'a' closest nodes to key stored in routing table
-                Node[] nodes = mTable.getClosestNodes(key, a);
-                for(Node node: nodes) {
-                    mServer.findNodes(node, key, a);
-                }
-                --a;
-            } while (a > 0);
-
-        } catch (InterruptedException e) {
+            mServer.findNodes(toNode, key);
+        } catch (ConnectException e) {
+            LOG.info("Can't connect to node " + toNode.toString());
+        }
+        catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        return mTable.getClosestNodes(key, Constants.K);
     }
 
     private Node[] findValue(Key key) {
@@ -118,8 +106,8 @@ public class NettyKademliaDht implements DistributedHashTable {
         }
 
         @Override
-        public Node[] getClosestNodes(Key key, int limit) {
-            return mTable.getClosestNodes(key, limit);
+        public Node[] getClosestNodes(Key key) {
+            return mTable.getClosestNodes(key, Constants.K);
         }
     }
 

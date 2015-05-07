@@ -9,6 +9,6 @@ import com.jackqack.dht.node.Node;
 public interface INettyServerCallbacks {
     public void seenNode(Node remoteNode);
 
-    public Node[] getClosestNodes(Key key, int limit);
+    public Node[] getClosestNodes(Key key);
 
 }

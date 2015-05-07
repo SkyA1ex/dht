@@ -112,7 +112,7 @@ public class NettyKademliaServer {
         After receiving answer add returned nodes to routing table.
         TODO: make method asynchronous!!
      */
-    public void findNodes(Node toNode, Key key, int limit) throws InterruptedException {
+    public void findNodes(Node toNode, Key key) throws InterruptedException, ConnectException {
         final FindNodeHandler findNodeHandler = new FindNodeHandler(mCallbacks);
         Bootstrap b = new Bootstrap();
         b.group(workerGroup);
@@ -132,7 +132,7 @@ public class NettyKademliaServer {
 
         // Start the client.
         ChannelFuture f = b.connect(toNode.getIpAddress(), toNode.getTcpPort()).sync();
-        f.channel().writeAndFlush(new FindNodeMessage(mNode, toNode, key, limit)).sync();
+        f.channel().writeAndFlush(new FindNodeMessage(mNode, toNode, key)).sync();
         f.channel().read();
         f.channel().closeFuture().sync();
     }

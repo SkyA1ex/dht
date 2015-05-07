@@ -39,7 +39,7 @@ public class FindNodeHandler extends ChannelHandlerAdapter {
         if (message.isRequest()) {
             LOG.info(String.format("Received findNode request from %s\n", message.getFromNode().toString()));
             message.setAnswer();
-            message.setNodes(mCallbacks.getClosestNodes(message.getKey(), message.getLimit()));
+            message.setNodes(mCallbacks.getClosestNodes(message.getKey()));
             LOG.info(String.format("Sent findNode answer to %s\n", message.getFromNode().toString()));
             ctx.writeAndFlush(message);
         } // save all nodes in routing table and close the channel

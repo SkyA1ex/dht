@@ -66,13 +66,6 @@ public abstract class RoutingTable implements Pingable{
             i = (i + 1) % BUCKETS;
             ++k;
         }
-//        for(; i < BUCKETS; ++i) {
-//            List<Node> list = Arrays.asList(buckets[i].getClosestNodes(key, limit));
-//            closestNodes.addAll(list);
-//            limit -= list.size();
-//            if (limit == 0)
-//                break;
-//        }
         return closestNodes.toArray(new Node[0]);
     }
 
