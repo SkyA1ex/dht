@@ -1,7 +1,5 @@
 package com.jackqack.dht.node;
 
-import com.jackqack.dht.netty.handlers.PingHandler;
-
 import java.util.*;
 import java.util.logging.Logger;
 

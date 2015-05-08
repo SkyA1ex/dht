@@ -1,8 +1,9 @@
 package com.jackqack.dht.netty;
 
-import com.jackqack.dht.file.SimpleData;
-import com.jackqack.dht.netty.handlers.FindNodeHandler;
-import com.jackqack.dht.netty.handlers.PingHandler;
+import com.jackqack.dht.netty.handlers.FindNodeInboundHandler;
+import com.jackqack.dht.netty.handlers.SendFindNodeHandler;
+import com.jackqack.dht.netty.handlers.SendPingHandler;
+import com.jackqack.dht.netty.handlers.PingInboundHandler;
 import com.jackqack.dht.netty.protocol.FindNodeMessage;
 import com.jackqack.dht.netty.protocol.Message;
 import com.jackqack.dht.netty.protocol.PingMessage;
@@ -25,8 +26,6 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.net.ConnectException;
-import java.sql.Time;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -57,8 +56,8 @@ public class NettyKademliaServer {
             public void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                        new PingHandler(mCallbacks),
-                        new FindNodeHandler(mCallbacks));
+                        new PingInboundHandler(mCallbacks),
+                        new FindNodeInboundHandler(mCallbacks));
             }
         });
 
@@ -84,7 +83,8 @@ public class NettyKademliaServer {
         Return pingTo to host im ms
      */
     public long pingTo(Node toNode) throws InterruptedException, ConnectException, TimeoutException {
-        final PingHandler pingHandler = new PingHandler(mCallbacks);
+        final SendPingHandler sendPingHandler = new SendPingHandler(mCallbacks);
+//        final PingInboundHandler pingHandler = new PingInboundHandler(mCallbacks);
         Bootstrap b = new Bootstrap();
         b.group(workerGroup);
         b.channel(NioSocketChannel.class);
@@ -97,7 +97,7 @@ public class NettyKademliaServer {
                 //p.addLast(new LoggingHandler(LogLevel.INFO));
                 p.addLast(new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                        pingHandler);
+                        sendPingHandler);
             }
         });
 
@@ -106,16 +106,15 @@ public class NettyKademliaServer {
         f.channel().writeAndFlush(new PingMessage(mNode, toNode)).sync();
         f.channel().read();
         f.channel().closeFuture().sync();
-        return pingHandler.getPing();
+        return sendPingHandler.getPing();
     }
 
     /**
         Send request to find and return up to 'limit' closest to 'key' nodes.
         After receiving answer add returned nodes to routing table.
-        TODO: make method asynchronous!!
      */
     public void findNode(Node toNode, Key key) throws InterruptedException, ConnectException {
-        final FindNodeHandler findNodeHandler = new FindNodeHandler(mCallbacks);
+        final SendFindNodeHandler sendFindNodeHandler = new SendFindNodeHandler(mCallbacks);
         Bootstrap b = new Bootstrap();
         b.group(workerGroup);
         b.channel(NioSocketChannel.class);
@@ -128,7 +127,7 @@ public class NettyKademliaServer {
                 //p.addLast(new LoggingHandler(LogLevel.INFO));
                 p.addLast(new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                        findNodeHandler);
+                        sendFindNodeHandler);
             }
         });
 
@@ -139,30 +138,4 @@ public class NettyKademliaServer {
         f.channel().closeFuture().sync();
     }
 
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
