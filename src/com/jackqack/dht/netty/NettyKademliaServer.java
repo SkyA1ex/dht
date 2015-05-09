@@ -1,10 +1,9 @@
 package com.jackqack.dht.netty;
 
-import com.jackqack.dht.netty.handlers.FindNodeInboundHandler;
-import com.jackqack.dht.netty.handlers.SendFindNodeHandler;
-import com.jackqack.dht.netty.handlers.SendPingHandler;
-import com.jackqack.dht.netty.handlers.PingInboundHandler;
+import com.jackqack.dht.file.SimpleData;
+import com.jackqack.dht.netty.handlers.*;
 import com.jackqack.dht.netty.protocol.FindNodeMessage;
+import com.jackqack.dht.netty.protocol.FindValueMessage;
 import com.jackqack.dht.netty.protocol.Message;
 import com.jackqack.dht.netty.protocol.PingMessage;
 import com.jackqack.dht.node.Key;
@@ -57,6 +56,7 @@ public class NettyKademliaServer {
                 ch.pipeline().addLast(new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
                         new PingInboundHandler(mCallbacks),
+                        new FindValueInboundHandler(mCallbacks),
                         new FindNodeInboundHandler(mCallbacks));
             }
         });
@@ -137,5 +137,34 @@ public class NettyKademliaServer {
         f.channel().read();
         f.channel().closeFuture().sync();
     }
+
+    public SimpleData findValue(Node toNode, Key key) throws InterruptedException, ConnectException {
+        final SendFindValueHandler sendFindValueHandler = new SendFindValueHandler(mCallbacks);
+        Bootstrap b = new Bootstrap();
+        b.group(workerGroup);
+        b.channel(NioSocketChannel.class);
+        b.option(ChannelOption.TCP_NODELAY, true);
+        b.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
+        b.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+                ChannelPipeline p = ch.pipeline();
+                //p.addLast(new LoggingHandler(LogLevel.INFO));
+                p.addLast(new ObjectEncoder(),
+                        new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                        sendFindValueHandler);
+            }
+        });
+
+        // Start the client.
+        ChannelFuture f = b.connect(toNode.getIpAddress(), toNode.getTcpPort()).sync();
+        f.channel().writeAndFlush(new FindValueMessage(mNode, toNode, key)).sync();
+        f.channel().read();
+        f.channel().closeFuture().sync();
+        if (sendFindValueHandler.hasData())
+            return sendFindValueHandler.getData();
+        return null;
+    }
+
 
 }

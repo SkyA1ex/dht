@@ -10,20 +10,20 @@ import java.io.Serializable;
 public class SimpleData implements Serializable {
 
     private final Key key;
-    private int data;
+    private Object data;
 
-    public SimpleData(Key key, int data) {
+    public SimpleData(Key key, Object data) {
         this.key = key;
         this.data = data;
     }
 
-    public void setData(int newData) { data = newData; }
+    public void setData(Object newData) { data = newData; }
 
-    public int getData() { return data; }
+    public Object getData() { return data; }
     public Key getKey() { return key; }
 
     @Override
     public String toString() {
-        return String.format("key - %s; data - %d;", key.toString(), data);
+        return String.format("key - %s; data - %s;", key.toString(), data.toString());
     }
 }

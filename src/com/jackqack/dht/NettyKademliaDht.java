@@ -1,5 +1,6 @@
 package com.jackqack.dht;
 
+import com.jackqack.dht.file.SimpleData;
 import com.jackqack.dht.netty.INettyServerCallbacks;
 import com.jackqack.dht.netty.NettyKademliaServer;
 import com.jackqack.dht.node.Constants;
@@ -77,7 +78,8 @@ public class NettyKademliaDht implements DistributedHashTable {
         }
     }
 
-    private void store(Node node, Map<Key, Object> o) { }
+    private void store(Node node, Map<Key, Object> o) {
+    }
 
     /**
      * Returns K closest to 'key' nodes from 'toNode' routing table
@@ -88,8 +90,7 @@ public class NettyKademliaDht implements DistributedHashTable {
             mServer.findNode(toNode, key);
         } catch (ConnectException e) {
             LOG.info("Can't connect to node " + toNode.toString());
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
@@ -98,11 +99,19 @@ public class NettyKademliaDht implements DistributedHashTable {
      * If 'toNode' stores value with key 'key' then it return the stored value.
      * Else returns K closest to 'key' nodes from 'toNode' routing table
      * and updates senders's routing table.
+     *
      * @param key
      * @return
      */
-    private Node[] findValue(Key key) {
-        return new Node[0];
+    public Object findValue(Node toNode, Key key) {
+        try {
+            mServer.findValue(toNode, key);
+        } catch (ConnectException e) {
+            LOG.info("Can't connect to node " + toNode.toString());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return null;
     }
 
     private class NettyServerCallbacks implements INettyServerCallbacks {
@@ -115,6 +124,16 @@ public class NettyKademliaDht implements DistributedHashTable {
         @Override
         public Node[] getClosestNodes(Key key) {
             return mTable.getClosestNodes(key, Constants.K);
+        }
+
+        @Override
+        public boolean hasValue(Key key) {
+            return false;
+        }
+
+        @Override
+        public SimpleData getValue(Key key) {
+            return null;
         }
     }
 

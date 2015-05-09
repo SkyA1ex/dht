@@ -2,7 +2,6 @@ package com.jackqack.dht.netty.handlers;
 
 import com.jackqack.dht.netty.INettyServerCallbacks;
 import com.jackqack.dht.netty.protocol.FindNodeMessage;
-import com.jackqack.dht.netty.protocol.PingMessage;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -22,12 +21,15 @@ public class FindNodeInboundHandler extends SimpleChannelInboundHandler<FindNode
 
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, FindNodeMessage findNodeMessage) throws Exception {
+        StringBuilder sb = new StringBuilder();
         // attach K closest to 'key' nodes to msg and send packet back to the sender
-        LOG.info(String.format("Received findNode request from %s\n", findNodeMessage.getFromNode().toString()));
+        sb.append(String.format("Received findNode request from %s\n", findNodeMessage.getFromNode().toString()));
         findNodeMessage.setAnswer();
         findNodeMessage.setNodes(mCallbacks.getClosestNodes(findNodeMessage.getKey()));
-        LOG.info(String.format("Sent findNode answer to %s\n", findNodeMessage.getFromNode().toString()));
+        sb.append(String.format("Attached %d nodes\n", findNodeMessage.getNodes().length));
         ctx.writeAndFlush(findNodeMessage);
+        sb.append(String.format("Sent findNode answer to %s\n", findNodeMessage.getFromNode().toString()));
+        LOG.info(sb.toString());
     }
 
     @Override

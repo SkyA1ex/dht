@@ -1,5 +1,6 @@
 package com.jackqack.dht.netty;
 
+import com.jackqack.dht.file.SimpleData;
 import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;
 
@@ -10,5 +11,9 @@ public interface INettyServerCallbacks {
     public void seenNode(Node remoteNode);
 
     public Node[] getClosestNodes(Key key);
+
+    public boolean hasValue(Key key);
+
+    public SimpleData getValue(Key key);
 
 }

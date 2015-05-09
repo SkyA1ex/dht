@@ -21,12 +21,14 @@ public class PingInboundHandler extends SimpleChannelInboundHandler<PingMessage>
 
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, PingMessage pingMessage) throws Exception {
+        StringBuilder sb = new StringBuilder();
         // if received ping request then send ping packet back sender
-        LOG.info(String.format("Received pingTo request from %s\n", pingMessage.getFromNode().toString()));
+        sb.append(String.format("Received pingTo request from %s\n", pingMessage.getFromNode().toString()));
         pingMessage.setAnswer();
-        LOG.info(String.format("Sent pingTo answer to %s\n", pingMessage.getFromNode().toString()));
+        sb.append(String.format("Sent pingTo answer to %s\n", pingMessage.getFromNode().toString()));
         ctx.writeAndFlush(pingMessage);
         mCallbacks.seenNode(pingMessage.getFromNode());
+        LOG.info(sb.toString());
     }
 
     @Override
