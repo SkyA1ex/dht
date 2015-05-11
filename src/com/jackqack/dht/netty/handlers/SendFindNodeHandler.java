@@ -30,6 +30,7 @@ public class SendFindNodeHandler extends ChannelHandlerAdapter {
         for(Node node: message.getNodes()) {
             mCallbacks.seenNode(node);
         }
+        mCallbacks.seenNode(message.getToNode());
     }
 
     @Override

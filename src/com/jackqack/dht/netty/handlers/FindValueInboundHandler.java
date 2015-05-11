@@ -38,6 +38,7 @@ public class FindValueInboundHandler extends SimpleChannelInboundHandler<FindVal
         // send packet back to the sender
         ctx.writeAndFlush(message);
         sb.append(String.format("Sent findValue answer to %s\n", message.getFromNode().toString()));
+        mCallbacks.seenNode(message.getFromNode());
         LOG.info(sb.toString());
     }
 

@@ -1,6 +1,7 @@
 package com.jackqack.test.dht;
 
 import com.jackqack.dht.NettyKademliaDht;
+import com.jackqack.dht.file.SimpleData;
 import com.jackqack.dht.node.Constants;
 import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;
@@ -34,6 +35,9 @@ public class NettyKademliaTest {
             dht1.pingTo(node2);
             dht1.findNode(node2, node5.getKey());
             dht1.findValue(node2, node4.getKey());
+            dht1.store(node2, new SimpleData(new Key(0010), "привет"));
+            dht1.store(node2, new SimpleData(new Key(0011), "hola"));
+            dht2.store(node1, new SimpleData(new Key(0012), "hello"));
         } catch (InterruptedException e) {
             System.err.println(e.toString());
         } finally {

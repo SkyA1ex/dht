@@ -15,6 +15,13 @@ public class StoreMessage implements Serializable {
     private boolean request;
     private boolean stored; // is true if remote node successfully stored the data
 
+    public StoreMessage(Node fromNode, Node toNode, SimpleData data) {
+        this.fromNode = fromNode;
+        this.toNode = toNode;
+        request = true;
+        this.data = data;
+    }
+
     public Node getFromNode() {
         return fromNode;
     }

@@ -29,6 +29,7 @@ public class FindNodeInboundHandler extends SimpleChannelInboundHandler<FindNode
         sb.append(String.format("Attached %d nodes\n", findNodeMessage.getNodes().length));
         ctx.writeAndFlush(findNodeMessage);
         sb.append(String.format("Sent findNode answer to %s\n", findNodeMessage.getFromNode().toString()));
+        mCallbacks.seenNode(findNodeMessage.getFromNode());
         LOG.info(sb.toString());
     }
 

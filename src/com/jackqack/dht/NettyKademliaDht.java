@@ -81,7 +81,14 @@ public class NettyKademliaDht implements DistributedHashTable {
         }
     }
 
-    private void store(Node node, Map<Key, Object> o) {
+    public void store(Node toNode, SimpleData data) {
+        try {
+            mServer.store(toNode, data);
+        } catch (ConnectException e) {
+            LOG.info("Can't connect to node " + toNode.toString());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**

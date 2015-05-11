@@ -42,6 +42,7 @@ public class SendFindValueHandler extends ChannelHandlerAdapter {
             }
             sb.append(String.format("Message contains %d nodes\n", message.getNodes().length));
         }
+        mCallbacks.seenNode(message.getToNode());
         LOG.info(sb.toString());
     }
 

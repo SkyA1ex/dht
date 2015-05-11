@@ -2,10 +2,7 @@ package com.jackqack.dht.netty;
 
 import com.jackqack.dht.file.SimpleData;
 import com.jackqack.dht.netty.handlers.*;
-import com.jackqack.dht.netty.protocol.FindNodeMessage;
-import com.jackqack.dht.netty.protocol.FindValueMessage;
-import com.jackqack.dht.netty.protocol.Message;
-import com.jackqack.dht.netty.protocol.PingMessage;
+import com.jackqack.dht.netty.protocol.*;
 import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;
 import io.netty.bootstrap.Bootstrap;
@@ -57,7 +54,8 @@ public class NettyKademliaServer {
                         new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
                         new PingInboundHandler(mCallbacks),
                         new FindValueInboundHandler(mCallbacks),
-                        new FindNodeInboundHandler(mCallbacks));
+                        new FindNodeInboundHandler(mCallbacks),
+                        new StoreInboundHandler(mCallbacks));
             }
         });
 
@@ -164,6 +162,32 @@ public class NettyKademliaServer {
         if (sendFindValueHandler.hasData())
             return sendFindValueHandler.getData();
         return null;
+    }
+
+    public boolean store(Node toNode, SimpleData data) throws InterruptedException, ConnectException {
+        final SendStoreHandler sendStoreHandler = new SendStoreHandler(mCallbacks);
+        Bootstrap b = new Bootstrap();
+        b.group(workerGroup);
+        b.channel(NioSocketChannel.class);
+        b.option(ChannelOption.TCP_NODELAY, true);
+        b.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
+        b.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+                ChannelPipeline p = ch.pipeline();
+                //p.addLast(new LoggingHandler(LogLevel.INFO));
+                p.addLast(new ObjectEncoder(),
+                        new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                        sendStoreHandler);
+            }
+        });
+
+        // Start the client.
+        ChannelFuture f = b.connect(toNode.getIpAddress(), toNode.getTcpPort()).sync();
+        f.channel().writeAndFlush(new StoreMessage(mNode, toNode, data)).sync();
+        f.channel().read();
+        f.channel().closeFuture().sync();
+        return sendStoreHandler.isDataStored();
     }
 
 
