@@ -16,4 +16,6 @@ public interface INettyServerCallbacks {
 
     public SimpleData getValue(Key key);
 
+    public void store(SimpleData data);
+
 }

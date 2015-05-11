@@ -9,6 +9,7 @@ import com.jackqack.dht.node.Node;
 import com.jackqack.dht.node.RoutingTable;
 
 import java.net.ConnectException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
@@ -23,6 +24,7 @@ public class NettyKademliaDht implements DistributedHashTable {
     public RoutingTable mTable; // TODO: set private
     private NettyKademliaServer mServer;
     private NettyServerCallbacks mCallbacks;
+    private HashMap<Key, SimpleData> mData;
 
     public NettyKademliaDht(Node node) {
         mNode = node;
@@ -34,6 +36,7 @@ public class NettyKademliaDht implements DistributedHashTable {
         };
         mCallbacks = new NettyServerCallbacks();
         mServer = new NettyKademliaServer(mNode, mCallbacks);
+        mData = new HashMap<>();
     }
 
     @Override
@@ -128,12 +131,17 @@ public class NettyKademliaDht implements DistributedHashTable {
 
         @Override
         public boolean hasValue(Key key) {
-            return false;
+            return mData.containsKey(key);
         }
 
         @Override
         public SimpleData getValue(Key key) {
-            return null;
+            return mData.get(key);
+        }
+
+        @Override
+        public void store(SimpleData data) {
+            mData.put(data.getKey(), data);
         }
     }
 
