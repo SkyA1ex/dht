@@ -7,10 +7,10 @@ import com.jackqack.dht.node.Constants;
 import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;
 import com.jackqack.dht.node.RoutingTable;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.net.ConnectException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
@@ -54,9 +54,43 @@ public class NettyKademliaDht implements DistributedHashTable {
 
     }
 
+    /**
+     * Get set of K closest to 'key' nodes from routing table and send findNode to 'a' of them
+     * which not seen yet.
+     * Repeat sending findNode request while exist non-seen nodes returning by routing table.
+     * @param key
+     * @return
+     */
     @Override
     public Object lookup(Key key) {
-        return null;
+        // Map that save info which node seen
+        HashMap<Key, Boolean> seenNodes = new HashMap<>();
+        int seen;
+        // do until all nodes are seen
+        do {
+            // get K closest nodes
+            Node[] closestNodes = mTable.getClosestNodes(key, Constants.K);
+            // pick 'a' nodes from K closest
+            ArrayList<Node> requestNodes = new ArrayList<>();
+            int i = 0;
+            for(Node node: closestNodes) {
+                if (!seenNodes.containsKey(node.getKey())) {
+                    requestNodes.add(node);
+                    if (++i == Constants.a)
+                        break;
+                }
+            }
+            // send findNode to nodes chosen before
+            seen = 0;
+            for(Node node: requestNodes) {
+                // send findNode request and add to seenNodes
+                findNode(node, key);
+                seenNodes.put(node.getKey(), true);
+                ++seen;
+            }
+        } while(seen != 0);
+        // TODO: figure out what should be returned (findValue)
+        return mTable.getClosestNodes(key, Constants.K);
     }
 
     public long pingTo(Node node) {

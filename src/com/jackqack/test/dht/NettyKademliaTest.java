@@ -33,11 +33,11 @@ public class NettyKademliaTest {
             dht1.run();
             dht2.run();
             dht1.pingTo(node2);
-            dht1.findNode(node2, node5.getKey());
+            dht1.lookup(node5.getKey());
             dht1.findValue(node2, node4.getKey());
-            dht1.store(node2, new SimpleData(new Key(0010), "привет"));
-            dht1.store(node2, new SimpleData(new Key(0011), "hola"));
-            dht2.store(node1, new SimpleData(new Key(0012), "hello"));
+//            dht1.store(node2, new SimpleData(new Key(0010), "привет"));
+//            dht1.store(node2, new SimpleData(new Key(0011), "hola"));
+//            dht2.store(node1, new SimpleData(new Key(0012), "hello"));
         } catch (InterruptedException e) {
             System.err.println(e.toString());
         } finally {
