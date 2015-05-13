@@ -111,7 +111,7 @@ public class NettyKademliaServer {
         Send request to find and return up to 'limit' closest to 'key' nodes.
         After receiving answer add returned nodes to routing table.
      */
-    public void findNode(Node toNode, Key key) throws InterruptedException, ConnectException {
+    public Node[] findNode(Node toNode, Key key) throws InterruptedException, ConnectException {
         final SendFindNodeHandler sendFindNodeHandler = new SendFindNodeHandler(mCallbacks);
         Bootstrap b = new Bootstrap();
         b.group(workerGroup);
@@ -134,6 +134,10 @@ public class NettyKademliaServer {
         f.channel().writeAndFlush(new FindNodeMessage(mNode, toNode, key)).sync();
         f.channel().read();
         f.channel().closeFuture().sync();
+        if (sendFindNodeHandler.hasNodes())
+            return sendFindNodeHandler.getNodes();
+        else
+            return null;
     }
 
     public SimpleData findValue(Node toNode, Key key) throws InterruptedException, ConnectException {

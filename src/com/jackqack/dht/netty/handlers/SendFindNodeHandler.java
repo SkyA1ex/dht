@@ -16,7 +16,7 @@ public class SendFindNodeHandler extends ChannelHandlerAdapter {
     private static final Logger LOG = Logger.getLogger(SendFindNodeHandler.class.toString());
     
     private INettyServerCallbacks mCallbacks;
-
+    private Node[] nodes;
 
     public SendFindNodeHandler(INettyServerCallbacks callbacks) {
         mCallbacks = callbacks;
@@ -27,7 +27,8 @@ public class SendFindNodeHandler extends ChannelHandlerAdapter {
         FindNodeMessage message = (FindNodeMessage) msg;
         // save all nodes in routing table and close the channel
         LOG.info(String.format("Received findNode answer from %s\n", message.getToNode().toString()));
-        for(Node node: message.getNodes()) {
+        nodes = message.getNodes();
+        for(Node node: nodes) {
             mCallbacks.seenNode(node);
         }
         mCallbacks.seenNode(message.getToNode());
@@ -52,5 +53,9 @@ public class SendFindNodeHandler extends ChannelHandlerAdapter {
         ctx.close();
         super.exceptionCaught(ctx, cause);
     }
+
+    public boolean hasNodes() { return nodes!=null; }
+
+    public Node[] getNodes() { return nodes; }
 
 }
