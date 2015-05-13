@@ -81,12 +81,11 @@ public class NettyKademliaDht implements DistributedHashTable {
                 }
             }
             // send findNode to nodes chosen before
-            seen = 0;
+            seen = requestNodes.size();
             for(Node node: requestNodes) {
                 // send findNode request and add to seenNodes
                 findNode(node, key);
                 seenNodes.put(node.getKey(), true);
-                ++seen;
             }
         } while(seen != 0);
         // TODO: figure out what should be returned (findValue)

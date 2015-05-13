@@ -82,32 +82,28 @@ public abstract class RoutingTable implements Pingable{
 
     private class Bucket {
 
-        private LinkedHashMap<Key, Node> nodes = new LinkedHashMap<>(Constants.K, (float) 0.75, true);
+        private final LinkedHashMap<Key, Node> nodes = new LinkedHashMap<>(Constants.K, (float) 0.75, true);
 
         public void seenNode(Node newNode) {
-            synchronized (nodes) {
-                if (nodes.containsKey(newNode.getKey())) {
-                    nodes.remove(newNode.getKey());
-                    nodes.put(newNode.getKey(), newNode);
-                } else if (nodes.size() < Constants.K) {
-                    nodes.put(newNode.getKey(), newNode);
-                } else {
-                    /**
-                     * 1. Send pingTo request to least-recently node
-                     * 2. Remove this node if it's failed to respond and insert newNode to tail
-                     * 3. Otherwise move LR-node to the tail and discard newNode inserting
-                     */
-                    Map.Entry<Key, Node> entry = nodes.entrySet().iterator().next();
-                    nodes.remove(entry.getKey());
-                    Node lruNode = entry.getValue();
+            if (nodes.containsKey(newNode.getKey())) {
+                synchronized (nodes) { nodes.remove(newNode.getKey()); }
+                nodes.put(newNode.getKey(), newNode);
+            } else if (nodes.size() < Constants.K) {
+                synchronized (nodes) { nodes.put(newNode.getKey(), newNode); }
+            } else {
+                /**
+                 * 1. Send pingTo request to least-recently node
+                 * 2. Remove this node if it's failed to respond and insert newNode to tail
+                 * 3. Otherwise move LR-node to the tail and discard newNode inserting
+                 */
+                Map.Entry<Key, Node> entry = nodes.entrySet().iterator().next();
+                synchronized (nodes) { nodes.remove(entry.getKey()); }
+                Node lruNode = entry.getValue();
 
-                    long delay = ping(lruNode);
-                    if (delay != -1) {
-                        nodes.put(lruNode.getKey(), lruNode);
-                    }
-                    else {
-                        nodes.put(newNode.getKey(), newNode);
-                    }
+                // if delay >=0 add node to bucket automatically in handler by callback
+                long delay = ping(lruNode);
+                if (delay == -1) {
+                    synchronized (nodes) {  nodes.put(newNode.getKey(), newNode); }
                 }
             }
         }
