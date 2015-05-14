@@ -24,11 +24,11 @@ public class NettyKademliaTest {
         Node node7 = new Node(new Key(0007), "127.0.0.1", 8086, Constants.UDP_PORT);
         NettyKademliaDht dht1 = new NettyKademliaDht(node1);
         NettyKademliaDht dht2 = new NettyKademliaDht(node2);
-        dht2.mTable.seenNode(node3);
-        dht2.mTable.seenNode(node4);
-        dht2.mTable.seenNode(node5);
-        dht2.mTable.seenNode(node6);
-        dht2.mTable.seenNode(node7);
+        dht2.addNode(node3);
+        dht2.addNode(node4);
+        dht2.addNode(node5);
+        dht2.addNode(node6);
+        dht2.addNode(node7);
         try {
             dht1.run();
             dht2.run();

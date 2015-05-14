@@ -24,80 +24,83 @@ public class LookupKademliaTest {
         notRun[7] = true;
         notRun[9] = true;
 
-        dhts[1].mTable.seenNode(nodes[3]);
-        dhts[1].mTable.seenNode(nodes[6]);
-        dhts[1].mTable.seenNode(nodes[8]);
-        dhts[1].mTable.seenNode(nodes[11]);
+        dhts[1].addNode(nodes[3]);
+        dhts[1].addNode(nodes[6]);
+        dhts[1].addNode(nodes[8]);
+        dhts[1].addNode(nodes[11]);
 
-        dhts[2].mTable.seenNode(nodes[3]);
-        dhts[2].mTable.seenNode(nodes[1]);
-        dhts[2].mTable.seenNode(nodes[5]);
-        dhts[2].mTable.seenNode(nodes[8]);
+        dhts[2].addNode(nodes[3]);
+        dhts[2].addNode(nodes[1]);
+        dhts[2].addNode(nodes[5]);
+        dhts[2].addNode(nodes[8]);
 
-        dhts[3].mTable.seenNode(nodes[2]);
-        dhts[3].mTable.seenNode(nodes[5]);
-        dhts[3].mTable.seenNode(nodes[11]);
-        dhts[3].mTable.seenNode(nodes[14]);
+        dhts[3].addNode(nodes[2]);
+        dhts[3].addNode(nodes[5]);
+        dhts[3].addNode(nodes[11]);
+        dhts[3].addNode(nodes[14]);
 
-        dhts[4].mTable.seenNode(nodes[5]);
-        dhts[4].mTable.seenNode(nodes[6]);
-        dhts[4].mTable.seenNode(nodes[3]);
-        dhts[4].mTable.seenNode(nodes[15]);
+        dhts[4].addNode(nodes[5]);
+        dhts[4].addNode(nodes[6]);
+        dhts[4].addNode(nodes[3]);
+        dhts[4].addNode(nodes[15]);
 
-        dhts[5].mTable.seenNode(nodes[4]);
-        dhts[5].mTable.seenNode(nodes[6]);
-        dhts[5].mTable.seenNode(nodes[1]);
-        dhts[5].mTable.seenNode(nodes[11]);
+        dhts[5].addNode(nodes[4]);
+        dhts[5].addNode(nodes[6]);
+        dhts[5].addNode(nodes[1]);
+        dhts[5].addNode(nodes[11]);
 
-        dhts[6].mTable.seenNode(nodes[1]);
-        dhts[6].mTable.seenNode(nodes[5]);
-        dhts[6].mTable.seenNode(nodes[10]);
-        dhts[6].mTable.seenNode(nodes[13]);
+        dhts[6].addNode(nodes[1]);
+        dhts[6].addNode(nodes[5]);
+        dhts[6].addNode(nodes[10]);
+        dhts[6].addNode(nodes[13]);
 
-        dhts[8].mTable.seenNode(nodes[11]);
-        dhts[8].mTable.seenNode(nodes[14]);
-        dhts[8].mTable.seenNode(nodes[6]);
+        dhts[8].addNode(nodes[11]);
+        dhts[8].addNode(nodes[14]);
+        dhts[8].addNode(nodes[6]);
 
-        dhts[10].mTable.seenNode(nodes[11]);
-        dhts[10].mTable.seenNode(nodes[8]);
-        dhts[10].mTable.seenNode(nodes[13]);
-        dhts[10].mTable.seenNode(nodes[3]);
+        dhts[10].addNode(nodes[11]);
+        dhts[10].addNode(nodes[8]);
+        dhts[10].addNode(nodes[13]);
+        dhts[10].addNode(nodes[3]);
 
-        dhts[11].mTable.seenNode(nodes[10]);
-        dhts[11].mTable.seenNode(nodes[8]);
-        dhts[11].mTable.seenNode(nodes[13]);
-        dhts[11].mTable.seenNode(nodes[2]);
-        dhts[11].mTable.seenNode(nodes[3]);
+        dhts[11].addNode(nodes[10]);
+        dhts[11].addNode(nodes[8]);
+        dhts[11].addNode(nodes[13]);
+        dhts[11].addNode(nodes[2]);
+        dhts[11].addNode(nodes[3]);
 
-        dhts[12].mTable.seenNode(nodes[13]);
-        dhts[12].mTable.seenNode(nodes[14]);
-        dhts[12].mTable.seenNode(nodes[10]);
-        dhts[12].mTable.seenNode(nodes[5]);
+        dhts[12].addNode(nodes[13]);
+        dhts[12].addNode(nodes[14]);
+        dhts[12].addNode(nodes[10]);
+        dhts[12].addNode(nodes[5]);
 
-        dhts[13].mTable.seenNode(nodes[12]);
-        dhts[13].mTable.seenNode(nodes[15]);
-        dhts[13].mTable.seenNode(nodes[8]);
-        dhts[13].mTable.seenNode(nodes[1]);
+        dhts[13].addNode(nodes[12]);
+        dhts[13].addNode(nodes[15]);
+        dhts[13].addNode(nodes[8]);
+        dhts[13].addNode(nodes[1]);
 
-        dhts[14].mTable.seenNode(nodes[15]);
-        dhts[14].mTable.seenNode(nodes[12]);
-        dhts[14].mTable.seenNode(nodes[10]);
-        dhts[14].mTable.seenNode(nodes[4]);
+        dhts[14].addNode(nodes[15]);
+        dhts[14].addNode(nodes[12]);
+        dhts[14].addNode(nodes[10]);
+        dhts[14].addNode(nodes[4]);
 
-        dhts[15].mTable.seenNode(nodes[14]);
-        dhts[15].mTable.seenNode(nodes[12]);
-        dhts[15].mTable.seenNode(nodes[10]);
-        dhts[15].mTable.seenNode(nodes[6]);
-        dhts[15].mTable.seenNode(nodes[5]);
+        dhts[15].addNode(nodes[14]);
+        dhts[15].addNode(nodes[12]);
+        dhts[15].addNode(nodes[10]);
+        dhts[15].addNode(nodes[6]);
+        dhts[15].addNode(nodes[5]);
 
-        dhts[0].mTable.seenNode(nodes[1]);
+        dhts[0].addNode(nodes[1]);
         Node[] closest = new Node[0];
         try {
             for (int i = 0; i < n; ++i)
                 if (!notRun[i])
                     dhts[i].run();
-//            dhts[0].findNode(nodes[6], nodes[0].getKey());
-            closest = (Node[]) dhts[0].lookup(nodes[0].getKey());
+            dhts[0].lookup(nodes[0].getKey());
+
+            Key key1 = Key.getRandomKey();
+            dhts[0].insert(key1, "HI ALL STRING");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
