@@ -7,7 +7,6 @@ import com.jackqack.dht.node.Constants;
 import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;
 import com.jackqack.dht.node.RoutingTable;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.net.ConnectException;
 import java.util.*;
@@ -21,7 +20,7 @@ public class NettyKademliaDht implements DistributedHashTable {
     private static final Logger LOG = Logger.getLogger(NettyKademliaDht.class.toString());
 
     private Node mNode;
-    private RoutingTable mTable; // TODO: set private
+    private RoutingTable mTable;
     private NettyKademliaServer mServer;
     private NettyServerCallbacks mCallbacks;
     private HashMap<Key, SimpleData> mData;
@@ -46,6 +45,7 @@ public class NettyKademliaDht implements DistributedHashTable {
 
     /**
      * Manually adds previously known existing Kademlia node to routing table
+     *
      * @param node existing Kademlia node
      */
     public void addNode(Node node) {
@@ -67,14 +67,15 @@ public class NettyKademliaDht implements DistributedHashTable {
      * Insert object in Kademlia.
      * Perform lookup to find k closest nodes to key of object.
      * Then send STORE Kademlia instruction to all of them.
-     * @param key a key of object
+     *
+     * @param key    a key of object
      * @param object an object which should be stored in Kademlia
      */
     @Override
     public void insert(Key key, Object object) {
         SimpleData data = new SimpleData(key, object);
         Node[] nodes = lookup(key);
-        for(Node node: nodes) {
+        for (Node node : nodes) {
             store(node, data);
         }
     }
@@ -85,6 +86,7 @@ public class NettyKademliaDht implements DistributedHashTable {
      * findNode to 'a' of them which not seen yet.
      * Repeats sending findNode request while exist non-seen nodes
      * in set of K closest nodes returning by routing table.
+     *
      * @param key the key on which will lookup
      * @return Array of k closest nodes to given key
      */
@@ -127,17 +129,42 @@ public class NettyKademliaDht implements DistributedHashTable {
             }
             // send findNode to nodes chosen before
             seen = requestNodes.size();
-            for(Node node: requestNodes) {
+            for (Node node : requestNodes) {
                 // send findNode request and add to seenNodes
                 Node[] returnedNodes = findNode(node, key);
                 closestNodes.addAll(Arrays.asList(returnedNodes));
                 seenNodes.put(node.getKey(), true);
             }
-        } while(seen != 0);
+        } while (seen != 0);
         return Arrays.asList(closestNodes.toArray(new Node[0])).subList(0, Constants.K).toArray(new Node[0]);
     }
 
-    public long pingTo(Node node) {
+    /**
+     * Search value of data in the Kadenlia by given key
+     *
+     * @param key a key of data which should be returned
+     * @return Object if data with this key found and null otherwise.
+     */
+    public Object find(Key key) {
+        Node[] nodes = lookup(key);
+        Object result;
+        for (Node node : nodes) {
+            result = findValue(node, key);
+            if (result != null)
+                return result;
+        }
+        return null;
+    }
+
+    public void waitClose() {
+        try {
+            mServer.waitClose();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private long pingTo(Node node) {
         long delay = -1;
         try {
             delay = mServer.pingTo(node);
@@ -151,15 +178,7 @@ public class NettyKademliaDht implements DistributedHashTable {
         return delay;
     }
 
-    public void waitClose() {
-        try {
-            mServer.waitClose();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    public void store(Node toNode, SimpleData data) {
+    private void store(Node toNode, SimpleData data) {
         try {
             mServer.store(toNode, data);
         } catch (ConnectException e) {
@@ -173,7 +192,7 @@ public class NettyKademliaDht implements DistributedHashTable {
      * Returns K closest to 'key' nodes from 'toNode' routing table
      * and updates sender's routing table
      */
-    public Node[] findNode(Node toNode, Key key) {
+    private Node[] findNode(Node toNode, Key key) {
         try {
             return mServer.findNode(toNode, key);
         } catch (ConnectException e) {
@@ -192,7 +211,7 @@ public class NettyKademliaDht implements DistributedHashTable {
      * @param key
      * @return
      */
-    public Object findValue(Node toNode, Key key) {
+    private Object findValue(Node toNode, Key key) {
         try {
             mServer.findValue(toNode, key);
         } catch (ConnectException e) {

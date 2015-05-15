@@ -96,7 +96,7 @@ public class LookupKademliaTest {
             for (int i = 0; i < n; ++i)
                 if (!notRun[i])
                     dhts[i].run();
-            dhts[0].lookup(nodes[0].getKey());
+            dhts[0].bootstrap();
 
             Key key1 = Key.getRandomKey();
             dhts[0].insert(key1, "HI ALL STRING");

@@ -2,7 +2,6 @@ package com.jackqack.dht.netty.handlers;
 
 import com.jackqack.dht.file.SimpleData;
 import com.jackqack.dht.netty.INettyServerCallbacks;
-import com.jackqack.dht.netty.protocol.FindNodeMessage;
 import com.jackqack.dht.netty.protocol.FindValueMessage;
 import com.jackqack.dht.node.Node;
 import io.netty.channel.ChannelHandlerAdapter;
@@ -34,8 +33,7 @@ public class SendFindValueHandler extends ChannelHandlerAdapter {
         if (message.hasData()) {
             mData = message.getData();
             sb.append(String.format("Message contains data with key %s\n", mData.getKey().toString()));
-        }
-        else {
+        } else {
             // save all nodes in routing table
             for (Node node : message.getNodes()) {
                 mCallbacks.seenNode(node);
@@ -66,8 +64,12 @@ public class SendFindValueHandler extends ChannelHandlerAdapter {
         super.exceptionCaught(ctx, cause);
     }
 
-    public boolean hasData() { return mData != null; }
+    public boolean hasData() {
+        return mData != null;
+    }
 
-    public SimpleData getData() { return mData; }
+    public SimpleData getData() {
+        return mData;
+    }
 
 }

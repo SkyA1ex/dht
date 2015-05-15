@@ -15,11 +15,17 @@ public class FindValueMessage extends FindNodeMessage {
         super(fromNode, toNode, key);
     }
 
-    public SimpleData getData() { return data; }
+    public SimpleData getData() {
+        return data;
+    }
 
-    public void setData(SimpleData data) { this.data = data; }
+    public void setData(SimpleData data) {
+        this.data = data;
+    }
 
-    public boolean hasData() { return data != null; }
+    public boolean hasData() {
+        return data != null;
+    }
 
 
 }
