@@ -25,9 +25,13 @@ public class Node implements Serializable, Comparable<Node> {
         return mKey;
     }
 
-    public int getUdpPort() { return mUdpPort; }
+    public int getUdpPort() {
+        return mUdpPort;
+    }
 
-    public int getTcpPort() { return mTcpPort; }
+    public int getTcpPort() {
+        return mTcpPort;
+    }
 
     public String getIpAddress() {
         return mIpAddress;

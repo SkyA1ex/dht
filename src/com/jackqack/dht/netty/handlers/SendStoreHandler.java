@@ -1,9 +1,7 @@
 package com.jackqack.dht.netty.handlers;
 
 import com.jackqack.dht.netty.INettyServerCallbacks;
-import com.jackqack.dht.netty.protocol.FindNodeMessage;
 import com.jackqack.dht.netty.protocol.StoreMessage;
-import com.jackqack.dht.node.Node;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -55,6 +53,8 @@ public class SendStoreHandler extends ChannelHandlerAdapter {
         super.exceptionCaught(ctx, cause);
     }
 
-    public boolean isDataStored() { return stored; }
+    public boolean isDataStored() {
+        return stored;
+    }
 
 }

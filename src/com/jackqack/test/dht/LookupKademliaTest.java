@@ -96,11 +96,20 @@ public class LookupKademliaTest {
             for (int i = 0; i < n; ++i)
                 if (!notRun[i])
                     dhts[i].run();
-            dhts[0].lookup(nodes[0].getKey());
+            dhts[0].bootstrap();
 
             Key key1 = Key.getRandomKey();
-            dhts[0].insert(key1, "HI ALL STRING");
+            Key key2 = Key.getRandomKey();
+            Key key3 = Key.getRandomKey();
 
+            dhts[0].insert(key1, "HI ALL STRING");
+            dhts[1].insert(key2, "SECOND DATA");
+            dhts[14].insert(key3, "FINAL DATA");
+
+            String str2 = (String) dhts[4].find(key2);
+            String str1 = (String) dhts[13].find(key1);
+            String str3 = (String) dhts[11].find(key3);
+            System.out.println();
         } catch (Exception e) {
             e.printStackTrace();
         }

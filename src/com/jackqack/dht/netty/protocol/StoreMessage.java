@@ -30,13 +30,17 @@ public class StoreMessage implements Serializable {
         return toNode;
     }
 
-    public SimpleData getData() { return data; }
+    public SimpleData getData() {
+        return data;
+    }
 
     public boolean isRequest() {
         return request;
     }
 
-    public boolean isDataStored() { return stored; }
+    public boolean isDataStored() {
+        return stored;
+    }
 
     public void setFromNode(Node fromNode) {
         this.fromNode = fromNode;
@@ -46,7 +50,9 @@ public class StoreMessage implements Serializable {
         this.toNode = toNode;
     }
 
-    public void setData(SimpleData data) { this.data = data; }
+    public void setData(SimpleData data) {
+        this.data = data;
+    }
 
     public void setRequest() {
         request = true;
@@ -56,5 +62,7 @@ public class StoreMessage implements Serializable {
         request = false;
     }
 
-    public void setStored() { stored = true; }
+    public void setStored() {
+        stored = true;
+    }
 }

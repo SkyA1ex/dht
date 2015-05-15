@@ -17,10 +17,17 @@ public class SimpleData implements Serializable {
         this.data = data;
     }
 
-    public void setData(Object newData) { data = newData; }
+    public void setData(Object newData) {
+        data = newData;
+    }
 
-    public Object getData() { return data; }
-    public Key getKey() { return key; }
+    public Object getData() {
+        return data;
+    }
+
+    public Key getKey() {
+        return key;
+    }
 
     @Override
     public String toString() {

@@ -36,12 +36,18 @@ public class FindNodeMessage implements Serializable {
         return toNode;
     }
 
-    public Key getKey() { return key; }
+    public Key getKey() {
+        return key;
+    }
 
 
-    public Node[] getNodes() {return nodes; }
+    public Node[] getNodes() {
+        return nodes;
+    }
 
-    public void setNodes(Node[] nodes) { this.nodes = nodes.clone(); }
+    public void setNodes(Node[] nodes) {
+        this.nodes = nodes.clone();
+    }
 
     public boolean isRequest() {
         return request;

@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 /**
  * Created by jackqack on 3/4/15.
  */
-public abstract class RoutingTable implements Pingable{
+public abstract class RoutingTable implements Pingable {
     private static final Logger LOG = Logger.getLogger(RoutingTable.class.toString());
     private final static int BUCKETS = Constants.BIT_LENGTH + 1;
 
@@ -22,7 +22,7 @@ public abstract class RoutingTable implements Pingable{
 
     public RoutingTable(Node myNode) {
         this.myNode = myNode;
-        for(int i = 0; i < BUCKETS; ++i){
+        for (int i = 0; i < BUCKETS; ++i) {
             buckets[i] = new Bucket();
         }
     }
@@ -55,7 +55,7 @@ public abstract class RoutingTable implements Pingable{
         int i = myNode.getKey().dist(key).rank();
         int k = 0;
 
-        while(k < BUCKETS) {
+        while (k < BUCKETS) {
             List<Node> list = Arrays.asList(buckets[i].getClosestNodes(key, limit));
             closestNodes.addAll(list);
             limit -= list.size();
@@ -70,8 +70,8 @@ public abstract class RoutingTable implements Pingable{
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("My node: "+ myNode .toString()+ "\n");
-        for(int i = 0; i < BUCKETS; ++i) {
+        sb.append("My node: " + myNode.toString() + "\n");
+        for (int i = 0; i < BUCKETS; ++i) {
             sb.append("bucket " + String.valueOf(i) + ": ");
             sb.append(buckets[i].toString());
             sb.append("\n");
@@ -86,10 +86,14 @@ public abstract class RoutingTable implements Pingable{
 
         public void seenNode(Node newNode) {
             if (nodes.containsKey(newNode.getKey())) {
-                synchronized (nodes) { nodes.remove(newNode.getKey()); }
+                synchronized (nodes) {
+                    nodes.remove(newNode.getKey());
+                }
                 nodes.put(newNode.getKey(), newNode);
             } else if (nodes.size() < Constants.K) {
-                synchronized (nodes) { nodes.put(newNode.getKey(), newNode); }
+                synchronized (nodes) {
+                    nodes.put(newNode.getKey(), newNode);
+                }
             } else {
                 /**
                  * 1. Send pingTo request to least-recently node
@@ -97,13 +101,17 @@ public abstract class RoutingTable implements Pingable{
                  * 3. Otherwise move LR-node to the tail and discard newNode inserting
                  */
                 Map.Entry<Key, Node> entry = nodes.entrySet().iterator().next();
-                synchronized (nodes) { nodes.remove(entry.getKey()); }
+                synchronized (nodes) {
+                    nodes.remove(entry.getKey());
+                }
                 Node lruNode = entry.getValue();
 
                 // if delay >=0 add node to bucket automatically in handler by callback
                 long delay = ping(lruNode);
                 if (delay == -1) {
-                    synchronized (nodes) {  nodes.put(newNode.getKey(), newNode); }
+                    synchronized (nodes) {
+                        nodes.put(newNode.getKey(), newNode);
+                    }
                 }
             }
         }

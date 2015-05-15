@@ -2,7 +2,10 @@ package com.jackqack.dht.netty;
 
 import com.jackqack.dht.file.SimpleData;
 import com.jackqack.dht.netty.handlers.*;
-import com.jackqack.dht.netty.protocol.*;
+import com.jackqack.dht.netty.protocol.FindNodeMessage;
+import com.jackqack.dht.netty.protocol.FindValueMessage;
+import com.jackqack.dht.netty.protocol.PingMessage;
+import com.jackqack.dht.netty.protocol.StoreMessage;
 import com.jackqack.dht.node.Key;
 import com.jackqack.dht.node.Node;
 import io.netty.bootstrap.Bootstrap;
@@ -62,15 +65,6 @@ public class NettyKademliaServer {
         serverFuture = bootstrap.bind(mNode.getTcpPort()).sync();
     }
 
-    public void sendServerMessage(Message msg) {
-        System.out.printf("%d channels connected:\n", channels.size());
-        for (Channel ch : channels) {
-            System.out.printf("local address: %s, ", ch.localAddress().toString());
-            System.out.printf("remote address: %s\n", ch.remoteAddress().toString());
-            ch.writeAndFlush(msg);
-        }
-    }
-
     public void waitClose() throws InterruptedException {
         serverFuture.channel().closeFuture().sync();
         bossGroup.shutdownGracefully();
@@ -78,7 +72,7 @@ public class NettyKademliaServer {
     }
 
     /**
-        Return pingTo to host im ms
+     * Return pingTo to host im ms
      */
     public long pingTo(Node toNode) throws InterruptedException, ConnectException, TimeoutException {
         final SendPingHandler sendPingHandler = new SendPingHandler(mCallbacks);
@@ -108,8 +102,8 @@ public class NettyKademliaServer {
     }
 
     /**
-        Send request to find and return up to 'limit' closest to 'key' nodes.
-        After receiving answer add returned nodes to routing table.
+     * Send request to find and return up to 'limit' closest to 'key' nodes.
+     * After receiving answer add returned nodes to routing table.
      */
     public Node[] findNode(Node toNode, Key key) throws InterruptedException, ConnectException {
         final SendFindNodeHandler sendFindNodeHandler = new SendFindNodeHandler(mCallbacks);

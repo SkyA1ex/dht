@@ -1,7 +1,6 @@
 package com.jackqack.dht.netty.handlers;
 
 import com.jackqack.dht.netty.INettyServerCallbacks;
-import com.jackqack.dht.netty.protocol.FindNodeMessage;
 import com.jackqack.dht.netty.protocol.FindValueMessage;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -28,8 +27,7 @@ public class FindValueInboundHandler extends SimpleChannelInboundHandler<FindVal
             // attach SimpleData to msg
             message.setData(mCallbacks.getValue(message.getKey()));
             sb.append(String.format("Attached data with key %s\n", message.getData().getKey().toString()));
-        }
-        else {
+        } else {
             // attach K closest to 'key' nodes to msg
             message.setAnswer();
             message.setNodes(mCallbacks.getClosestNodes(message.getKey()));

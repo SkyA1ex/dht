@@ -79,8 +79,8 @@ public final class Key implements Serializable, Comparable<Key> {
         if (this.equals(k)) return 0;
         if (this.rank() > k.rank()) return 1;
         if (this.rank() < k.rank()) return -1;
-        int index = this.dist(k).rank()-1;
-        return id.get(index)? 1 : -1;
+        int index = this.dist(k).rank() - 1;
+        return id.get(index) ? 1 : -1;
     }
 
     @Override
